@@ -1,9 +1,59 @@
 #include "nm.h"
 
+void		print_output(int nsyms, int symoff, int stroff, char *ptr)
+{
+	int					i;
+	char				*stringtable;
+	struct nlist_64		*array;
+
+	array = (struct nlist_64 *)(ptr + symoff);
+	stringtable = ptr + stroff;
+	i = 0;
+	while (i < nsyms)
+	{
+		ft_printf("%s\n", stringtable + array[i].n_un.n_strx);
+		i++;
+	}
+}
+
+void		handle_64(char *ptr)
+{
+	int						i;
+	int						ncmds;
+	struct mach_header_64	*header;
+	struct load_command		*lc;
+	struct symtab_command	*sym;
+
+	header = (struct mach_header_64 *)ptr;
+	ncmds = header->ncmds;
+	lc = (struct load_command *)(ptr + sizeof(*header));
+	i = 0;
+	while (i < ncmds)
+	{
+		if (lc->cmd == LC_SYMTAB)
+		{
+			ft_printf("C'est le bon\n");
+			sym = (struct symtab_command *)lc;
+			ft_printf("nb symboles: %d\n", sym->nsyms);
+			print_output(sym->nsyms, sym->symoff, sym->stroff, ptr);
+			break;
+		}
+		lc = (struct load_command*)((void*)lc + lc->cmdsize);
+		i++;
+	}
+}
+
 void		nm(char *ptr)
 {
-	ptr = NULL;
-	ft_printf("yo\n");
+	unsigned int	magic_number;
+
+	magic_number = *(unsigned int*)ptr;
+	ft_printf("magic_number: %#x\n", magic_number);
+	if (magic_number == MH_MAGIC_64)
+	{
+		ft_printf("magic_number: je suis un binaire pour 64 bits\n");
+		handle_64(ptr);
+	}
 }
 
 int			main(int ac, char **av)
