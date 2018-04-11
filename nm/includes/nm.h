@@ -9,11 +9,10 @@
 # include <stdlib.h>
 # include "libft.h"
 
-# define DEBUG		0
+# define DEBUG		1
 
 typedef enum		e_error
 {
-	NO_ARGS_ERROR,
 	OPENING_ERROR,
 	FSTAT_ERROR,
 	MMAP_ERROR,

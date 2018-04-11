@@ -49,6 +49,6 @@ int			handle_args(int ac, char **av)
 int			main(int ac, char **av)
 {
 	if (ac < 2)
-		return (handle_error(NO_ARGS_ERROR));
+		handle_arg(ac, "a.out");
 	return (handle_args(ac, av));
 }

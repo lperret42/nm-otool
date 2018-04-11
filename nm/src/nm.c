@@ -34,8 +34,11 @@ void		print_symbol(char *stringtable, struct nlist_64 symbol)
 		ft_printf("%s", stringtable + symbol.n_un.n_strx);
 		if (DEBUG == 1)
 		{
-			ft_printf("   n_sect: %d   ", symbol.n_sect);
+			ft_printf("    n_un.n_strx: %d   ", symbol.n_un.n_strx);
+			ft_printf("n_type: %d   ", symbol.n_type);
+			ft_printf("n_sect: %d   ", symbol.n_sect);
 			ft_printf("n_desc: %d   ", symbol.n_desc);
+			ft_printf("n_value: %d   ", symbol.n_value);
 			ft_printf("n_type: %d   ", n_type);
 		}
 		ft_printf("\n");
@@ -67,6 +70,17 @@ void		handle_64(char *ptr)
 	struct symtab_command	*sym;
 
 	header = (struct mach_header_64 *)ptr;
+	if (DEBUG == 1)
+	{
+		ft_printf("header->magic: %#x\n", header->magic);
+		ft_printf("header->cputype: %d\n", header->cputype);
+		ft_printf("header->cpusubtype: %d\n", header->cpusubtype);
+		ft_printf("header->filetype: %d\n", header->filetype);
+		ft_printf("header->ncmds: %d\n", header->ncmds);
+		ft_printf("header->sizeofcmds: %d\n", header->sizeofcmds);
+		ft_printf("header->flags: %d\n", header->flags);
+		ft_printf("header->reserved: %d\n", header->reserved);
+	}
 	ncmds = header->ncmds;
 	lc = (struct load_command *)(ptr + sizeof(*header));
 	i = 0;
@@ -74,8 +88,8 @@ void		handle_64(char *ptr)
 	{
 		if (DEBUG == 1)
 		{
-			ft_printf("lc->cmd: %d\n", lc->cmd);
-			ft_printf("lc->cmdsize: %d\n", lc->cmdsize);
+			ft_printf("lc->cmd: %u\n", lc->cmd);
+			ft_printf("lc->cmdsize: %u\n", lc->cmdsize);
 		}
 		if (lc->cmd == LC_SYMTAB)
 		{
@@ -115,5 +129,8 @@ void		nm(char *ptr)
 		//handle_32(ptr);
 	}
 	else
+	{
 		ft_printf("not a binary for 32 or 64 bits\n");
+		handle_64(ptr);
+	}
 }
