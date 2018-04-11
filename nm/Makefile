@@ -11,7 +11,7 @@ SRC_PATH = ./src/
 INCLUDES_PATH = ./includes/
 OBJ_PATH = ./obj/
 
-SRC = main.c
+SRC = main.c nm.c error.c
 
 OBJ	= $(addprefix $(OBJ_PATH),$(SRC:.c=.o))
 

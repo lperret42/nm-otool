@@ -1,92 +1,54 @@
 #include "nm.h"
 
-void		print_output(int nsyms, int symoff, int stroff, char *ptr)
-{
-	int					i;
-	char				*stringtable;
-	struct nlist_64		*array;
-
-	array = (struct nlist_64 *)(ptr + symoff);
-	stringtable = ptr + stroff;
-	i = 0;
-	while (i < nsyms)
-	{
-		ft_printf("%s\n", stringtable + array[i].n_un.n_strx);
-		i++;
-	}
-}
-
-void		handle_64(char *ptr)
-{
-	int						i;
-	int						ncmds;
-	struct mach_header_64	*header;
-	struct load_command		*lc;
-	struct symtab_command	*sym;
-
-	header = (struct mach_header_64 *)ptr;
-	ncmds = header->ncmds;
-	lc = (struct load_command *)(ptr + sizeof(*header));
-	i = 0;
-	while (i < ncmds)
-	{
-		if (lc->cmd == LC_SYMTAB)
-		{
-			ft_printf("C'est le bon\n");
-			sym = (struct symtab_command *)lc;
-			ft_printf("nb symboles: %d\n", sym->nsyms);
-			print_output(sym->nsyms, sym->symoff, sym->stroff, ptr);
-			break;
-		}
-		lc = (struct load_command*)((void*)lc + lc->cmdsize);
-		i++;
-	}
-}
-
-void		nm(char *ptr)
-{
-	unsigned int	magic_number;
-
-	magic_number = *(unsigned int*)ptr;
-	ft_printf("magic_number: %#x\n", magic_number);
-	if (magic_number == MH_MAGIC_64)
-	{
-		ft_printf("magic_number: je suis un binaire pour 64 bits\n");
-		handle_64(ptr);
-	}
-}
-
-int			main(int ac, char **av)
+int			handle_arg(int ac, char *arg)
 {
 	int				fd;
 	char			*ptr;
 	struct stat		buf;
 
-	if (ac != 2)
+	if ((fd = open(arg, O_RDONLY)) < 0)
 	{
-		ft_printf("Please give me an argument\n");
-		return (EXIT_FAILURE);
+		ft_printf("%s: ", arg);
+		return (handle_error(OPENING_ERROR));
 	}
-	if ((fd = open(av[1], O_RDONLY)) < 0)
+	else
 	{
-		ft_printf("open failure\n");
-		return (EXIT_FAILURE);
+		if (ac >= 3)
+			ft_printf("\n%s:\n", arg);
+		if (fstat(fd, &buf) < 0)
+			return (handle_error(FSTAT_ERROR));
+		else if ((ptr = mmap(0, buf.st_size, PROT_READ,
+							MAP_PRIVATE, fd, 0)) == MAP_FAILED)
+			return (handle_error(MMAP_ERROR));
+		else
+		{
+			nm(ptr);
+			if (munmap(0, buf.st_size) < 0)
+				handle_error(MUNMAP_ERROR);
+		}
 	}
-	if (fstat(fd, &buf) < 0)
+	return (0);
+}
+
+int			handle_args(int ac, char **av)
+{
+	int		i;
+	int		nb_errors;
+
+	nb_errors = 0;
+	i = 1;
+	while (i < ac)
 	{
-		ft_printf("fstat failure\n");
-		return (EXIT_FAILURE);
+		if (handle_arg(ac, av[i]) != 0)
+			nb_errors++;
+		i++;
 	}
-	if ((ptr = mmap(0, buf.st_size, PROT_READ, MAP_PRIVATE, fd, 0)) == MAP_FAILED)
-	{
-		ft_printf("mmap failure\n");
-		return (EXIT_FAILURE);
-	}
-	nm(ptr);
-	if (munmap(0, buf.st_size) < 0)
-	{
-		ft_printf("mummap failure\n");
-		return (EXIT_FAILURE);
-	}
-	return 0;
+	return (nb_errors > 0 ? EXIT_FAILURE : EXIT_SUCCESS);
+}
+
+int			main(int ac, char **av)
+{
+	if (ac < 2)
+		return (handle_error(NO_ARGS_ERROR));
+	return (handle_args(ac, av));
 }
