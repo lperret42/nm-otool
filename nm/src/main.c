@@ -22,7 +22,7 @@ int			handle_arg(int ac, char *arg)
 			return (handle_error(MMAP_ERROR));
 		else
 		{
-			nm(ptr);
+			nm(ptr, arg);
 			if (munmap(0, buf.st_size) < 0)
 				handle_error(MUNMAP_ERROR);
 		}

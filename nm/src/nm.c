@@ -1,6 +1,6 @@
 #include "nm.h"
 
-void		nm(char *ptr)
+void		nm(char *ptr, char *file)
 {
 	unsigned int	magic_number;
 
@@ -23,7 +23,7 @@ void		nm(char *ptr)
 	{
 		if (DEBUG == 1)
 			ft_printf("ar binary\n");
-		handle_ar(ptr);
+		handle_ar(ptr, file);
 	}
 	else
 	{

@@ -11,7 +11,7 @@
 # include <stdlib.h>
 # include "libft.h"
 
-# define DEBUG		1
+# define DEBUG		0
 
 typedef enum		e_error
 {
@@ -21,9 +21,13 @@ typedef enum		e_error
 	MUNMAP_ERROR,
 }					t_error;
 
+void	nm(char *ptr, char *name);
+
 int		handle_error(t_error error);
 void	handle_64(char *ptr);
-void	handle_ar(char *ptr);
-void	nm(char *ptr);
+void	handle_ar(char *ptr, char *name);
+
+int		catch_size(char *name);
+char	*catch_name(char *name);
 
 #endif
