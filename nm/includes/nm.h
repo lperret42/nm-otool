@@ -21,6 +21,14 @@ typedef enum	e_error
 	MUNMAP_ERROR,
 }					t_error;
 
+typedef struct	s_sym
+{
+	unsigned long	value;
+	int				n_sect;
+	char			letter;
+	char			*name;
+}				t_sym;
+
 typedef struct	s_ar
 {
 	char		*name;
@@ -30,6 +38,8 @@ typedef struct	s_ar
 }				t_ar;
 
 void			nm(char *ptr, char *name);
+
+void			quick_sort(t_ar *ars, int begin, int end);
 
 int				handle_error(t_error error);
 

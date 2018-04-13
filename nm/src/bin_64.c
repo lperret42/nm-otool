@@ -1,64 +1,74 @@
 #include "nm.h"
 
-void		print_n_type(int n_type, int n_sect)
+char	get_n_type(int n_type, int n_sect)
 {
 	if (n_sect != NO_SECT)
-		ft_printf("T");
+		return 'T';
 	if (n_type == N_UNDF)
-		ft_printf("U");
+		return 'U';
 	else if (n_type == N_ABS)
-		ft_printf("A");
+		return 'A';
+	else					//need to handle this case
+		return 'A';   
 }
 
-void		print_n_value(int n_value, int n_sect)
+t_sym		get_sym(unsigned long value, int n_sect, char letter, char *name)
 {
-	if (n_sect != NO_SECT)
-		ft_printf("%016x", n_value);
-	else
-		ft_printf("%s", "                ");
+	t_sym		sym;
+
+	sym.value = value;
+	sym.n_sect = n_sect;
+	sym.letter = letter;
+	sym.name = name;
+
+	return sym;
 }
 
-void		print_symbol(char *stringtable, struct nlist_64 symbol)
+void		print_syms(t_sym *syms, int nsyms)
 {
-	int					n_type;
-	int					n_value;
+	int		i;
 
-	if (!(symbol.n_type & N_STAB))    //not symbolic debugging entry
+	i = 0;
+	while (i < nsyms)
 	{
-		n_type = symbol.n_type & N_TYPE;
-		n_value = symbol.n_value;
-		print_n_value(n_value, symbol.n_sect);
+		if (syms[i].n_sect != NO_SECT)
+			ft_printf("%016x", syms[i].value);
+		else
+			ft_printf("%s", "                ");
 		ft_printf(" ");
-		print_n_type(n_type, symbol.n_sect);
+		ft_printf("%c", syms[i].letter);
 		ft_printf(" ");
-		ft_printf("%s", stringtable + symbol.n_un.n_strx);
-		if (DEBUG == 1)
-		{
-			ft_printf("    n_un.n_strx: %d   ", symbol.n_un.n_strx);
-			ft_printf("n_type: %d   ", symbol.n_type);
-			ft_printf("n_sect: %d   ", symbol.n_sect);
-			ft_printf("n_desc: %d   ", symbol.n_desc);
-			ft_printf("n_value: %d   ", symbol.n_value);
-			ft_printf("n_type: %d   ", n_type);
-		}
-		ft_printf("\n");
+		ft_printf("%s\n", syms[i].name);
+		i++;
 	}
 }
 
-void		print_symbols(int nsyms, int symoff, int stroff, char *ptr)
+t_sym		*get_syms(int nsyms, int symoff, int stroff, char *ptr)
 {
 	int					i;
-	char				*stringtable;
+	t_sym				*syms;
 	struct nlist_64		*array;
+	char				*stringtable;
+	struct nlist_64		symbol;
+	char				letter;
 
+	if (!(syms = (t_sym*)ft_memalloc(sizeof(t_sym) * nsyms)))
+		return NULL;
 	array = (struct nlist_64 *)(ptr + symoff);
 	stringtable = ptr + stroff;
 	i = 0;
 	while (i < nsyms)
 	{
-		print_symbol(stringtable, array[i]);  //need to sort (ascii) symbols before write them
+		symbol = array[i];
+		if (!(symbol.n_type & N_STAB))    //not symbolic debugging entry
+		{
+			letter = get_n_type(symbol.n_type & N_TYPE, symbol.n_sect);
+			syms[i] = get_sym(symbol.n_value, symbol.n_sect, letter,
+									stringtable + symbol.n_un.n_strx);
+		}
 		i++;
 	}
+	return syms;
 }
 
 void		handle_64(char *ptr)
@@ -68,6 +78,7 @@ void		handle_64(char *ptr)
 	struct mach_header_64	*header;
 	struct load_command		*lc;
 	struct symtab_command	*sym;
+	t_sym					*syms;
 
 	header = (struct mach_header_64 *)ptr;
 	if (DEBUG == 1)
@@ -101,7 +112,9 @@ void		handle_64(char *ptr)
 				ft_printf("sym->stroff: %d\n", sym->stroff);
 				ft_printf("sym->strsize: %d\n", sym->strsize);
 			}
-			print_symbols(sym->nsyms, sym->symoff, sym->stroff, ptr);
+			syms = get_syms(sym->nsyms, sym->symoff, sym->stroff, ptr);
+			print_syms(syms, sym->nsyms);
+			free(syms);
 			break;
 		}
 		lc = (struct load_command*)((void*)lc + lc->cmdsize);
