@@ -13,7 +13,7 @@
 
 # define DEBUG		0
 
-typedef enum		e_error
+typedef enum	e_error
 {
 	OPENING_ERROR,
 	FSTAT_ERROR,
@@ -21,13 +21,22 @@ typedef enum		e_error
 	MUNMAP_ERROR,
 }					t_error;
 
-void	nm(char *ptr, char *name);
+typedef struct	s_ar
+{
+	char		*name;
+	uint64_t	strx;
+	uint64_t	off;
+	void		*ptr;
+}				t_ar;
 
-int		handle_error(t_error error);
-void	handle_64(char *ptr);
-void	handle_ar(char *ptr, char *name);
+void			nm(char *ptr, char *name);
 
-int		catch_size(char *name);
-char	*catch_name(char *name);
+int				handle_error(t_error error);
+
+void			handle_64(char *ptr);
+void			handle_ar(char *ptr, char *name);
+
+int				catch_size(char *name);
+char			*catch_name(char *name);
 
 #endif

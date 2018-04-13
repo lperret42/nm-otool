@@ -93,7 +93,8 @@ OBJ= $(addprefix $(OBJ_PATH),$(SRC:.c=.o))
 all: $(NAME)
 
 $(NAME): obj $(OBJ)
-	@libtool -v -static -o $@ $(LIBFT_A) $(OBJ)
+	#@libtool -v -static -o $@ $(LIBFT_A) $(OBJ)
+	@libtool -v -static -o $@ $(OBJ)
 	@echo "\033[32mLinking & indexing" [ $(NAME) ] "\033[0m"
 
 obj:
