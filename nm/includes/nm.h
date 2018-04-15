@@ -39,7 +39,10 @@ typedef struct	s_ar
 
 void			nm(char *ptr, char *name);
 
-void			quick_sort(t_ar *ars, int begin, int end);
+void			quick_sort_ars(t_ar *ars, int begin, int end);
+void			quick_sort_syms_ascii(t_sym *syms, int begin, int end);
+void			quick_sort_syms_numerically(t_sym *syms, int begin, int end);
+void			quick_sort_syms_same_ascii_numerically(t_sym *syms, int nsyms);
 
 int				handle_error(t_error error);
 

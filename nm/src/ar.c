@@ -6,33 +6,12 @@ void		process_ar(t_ar ar, char *file)
 	nm(ar.ptr, file);
 }
 
-void		sort_ars_by_strx(t_ar *ars, int nb_ar)
-{
-	int			i;
-	t_ar		tmp;
-
-	i = 0;
-	while (i < nb_ar - 1)
-	{
-		if (ars[i + 1].strx < ars[i].strx)
-		{
-			tmp = ars[i];
-			ars[i] = ars[i + 1];
-			ars[i + 1] = tmp;
-			i = 0;
-		}
-		else
-			i++;
-	}
-}
-
 void		process_ars(t_ar *ars, int nb_ar, char *file)
 {
 	int		i;
 	t_ar	tmp;
 
-	//sort_ars_by_strx(ars, nb_ar);
-	quick_sort(ars, 0, nb_ar - 1);
+	quick_sort_ars(ars, 0, nb_ar - 1);
 	i = 0;
 	while (i < nb_ar)
 	{
