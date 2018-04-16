@@ -91,7 +91,7 @@ void quick_sort_syms_same_ascii_numerically(t_sym *syms, int nsyms)
 	}
 }
 
-void quick_sort_syms_ascii(t_sym *syms, int begin, int end)
+void		quick_sort_syms_ascii(t_sym *syms, int begin, int end)
 {
 	int			left;
 	int			right;
@@ -100,18 +100,19 @@ void quick_sort_syms_ascii(t_sym *syms, int begin, int end)
 	left = begin - 1;
 	right = end + 1;
 	pivot = syms[begin].name;
-	if(begin >= end)
-		return;
-	while(1)
+	if (begin >= end)
+		return ;
+	while (1)
 	{
-		do left++; while(ft_strcmp(syms[left].name, pivot) < 0);
-		do right--; while(ft_strcmp(syms[right].name, pivot) > 0);
-
-		if(left < right)
+		while (ft_strcmp(syms[++left].name, pivot) < 0)
+			;
+		while (ft_strcmp(syms[--right].name, pivot) > 0)
+			;
+		if (left < right)
 			swap_sym(syms, left, right);
-		else break;
+		else
+			break ;
 	}
-
 	quick_sort_syms_ascii(syms, begin, right);
 	quick_sort_syms_ascii(syms, right + 1, end);
 }

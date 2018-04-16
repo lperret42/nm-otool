@@ -1,12 +1,30 @@
 #include "nm.h"
 
-void		process_ar(t_ar ar, char *file)
+int			catch_size(char *name)
 {
-	ft_printf("\n%s(%s):\n", file, ar.name);
-	nm(ar.ptr, file);
+	int		x;
+	char	*word;
+
+	word = ft_strchr(name, '/') + 1;
+	x = ft_atoi(word);
+	return (x);
 }
 
-void		process_ars(t_ar *ars, int nb_ar, char *file)
+char		*catch_name(char *name)
+{
+	int		length;
+
+	length = ft_strlen(ARFMAG);
+	return (ft_strstr(name, ARFMAG) + length);
+}
+
+void		process_ar(t_ar ar, char *file, t_options options)
+{
+	ft_printf("\n%s(%s):\n", file, ar.name);
+	nm(ar.ptr, file, options);
+}
+
+void		process_ars(t_ar *ars, int nb_ar, char *file, t_options options)
 {
 	int		i;
 	t_ar	tmp;
@@ -16,14 +34,14 @@ void		process_ars(t_ar *ars, int nb_ar, char *file)
 	while (i < nb_ar)
 	{
 		if (!(i > 0 && tmp.name == ars[i].name))   //doublon
-			process_ar(ars[i], file);
+			process_ar(ars[i], file, options);
 		tmp = ars[i];
 		i++;
 	}
 }
 
 
-void		handle_ar(char *ptr, char *file)
+void		handle_ar(char *ptr, char *file, t_options options)
 {
 	struct ar_hdr	*arch;
 	struct ranlib	*ran;
@@ -70,7 +88,7 @@ void		handle_ar(char *ptr, char *file)
 		}
 		i++;
 	}
-	process_ars(ars, size, file);
+	process_ars(ars, size, file, options);
 	free(ars);
 	return ;
 }
