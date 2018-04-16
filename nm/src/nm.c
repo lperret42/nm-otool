@@ -17,7 +17,7 @@ void		nm(char *ptr, char *file, t_options options)
 	{
 		if (DEBUG == 1)
 			ft_printf("binary for 32 bits\n");
-		handle_64(ptr, options);
+		handle_64(ptr, options);    //need to write a handle_32 function
 	}
 	else if (magic_number == FAT_MAGIC || magic_number == FAT_CIGAM)
 	{
@@ -34,6 +34,6 @@ void		nm(char *ptr, char *file, t_options options)
 	else
 	{
 		ft_printf("not a binary for 32 or 64 bits\n");
-		handle_64(ptr, options);
+		//handle_64(ptr, options);
 	}
 }

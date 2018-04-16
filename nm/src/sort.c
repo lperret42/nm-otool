@@ -9,6 +9,16 @@ void swap_ar(t_ar *ars, int a, int b)
 	ars[b] = tmp;
 }
 
+
+void swap_sym(t_sym *syms, int a, int b)
+{
+	t_sym	tmp;
+
+	tmp = syms[a];
+	syms[a] = syms[b];
+	syms[b] = tmp;
+}
+
 void quick_sort_ars(t_ar *ars, int begin, int end)
 {
 	int			left;
@@ -34,20 +44,11 @@ void quick_sort_ars(t_ar *ars, int begin, int end)
 	quick_sort_ars(ars, right + 1, end);
 }
 
-void swap_sym(t_sym *syms, int a, int b)
-{
-	t_sym	tmp;
-
-	tmp = syms[a];
-	syms[a] = syms[b];
-	syms[b] = tmp;
-}
-
 void quick_sort_syms_numerically(t_sym *syms, int begin, int end)
 {
 	int			left;
 	int			right;
-	uint64_t	pivot;
+	long		pivot;
 
 	left = begin - 1;
 	right = end + 1;
@@ -115,4 +116,28 @@ void		quick_sort_syms_ascii(t_sym *syms, int begin, int end)
 	}
 	quick_sort_syms_ascii(syms, begin, right);
 	quick_sort_syms_ascii(syms, right + 1, end);
+}
+
+void		quick_sort_syms(t_sym *syms, int nsyms, t_options options)
+{
+	int		i;
+
+	if (options.order == 'p')
+		return ;
+	else if (!options.order)
+	{
+		quick_sort_syms_ascii(syms, 0, nsyms - 1);
+		quick_sort_syms_same_ascii_numerically(syms, nsyms);
+	}
+	else if (options.order == 'n')
+	{
+		quick_sort_syms_numerically(syms, 0, nsyms - 1);
+		i = 0;
+		while (syms[i].value < 0)
+			i++;
+		if (i >= 2)
+			quick_sort_syms_ascii(syms, 0, i - 1);
+	}
+	else if (options.order == 'r')
+		quick_sort_syms_numerically(syms, 0, nsyms - 1);  // need to reverse
 }

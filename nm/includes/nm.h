@@ -6,7 +6,7 @@
 /*   By: lperret <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/16 11:44:43 by lperret           #+#    #+#             */
-/*   Updated: 2018/04/16 15:11:47 by lperret          ###   ########.fr       */
+/*   Updated: 2018/04/16 16:47:40 by lperret          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ typedef enum		e_error
 typedef struct	s_sym
 {
 	char			for_debug;
-	unsigned long	value;
+	long			value;
 	int				n_sect;
 	char			letter;
 	char			*name;
@@ -64,15 +64,17 @@ typedef struct	s_ar
 
 void			nm(char *ptr, char *name, t_options options);
 
+char			get_type(uint32_t type, int n_value, char *section_name);
+
 void			quick_sort_ars(t_ar *ars, int begin, int end);
-void			quick_sort_syms_ascii(t_sym *syms, int begin, int end);
-void			quick_sort_syms_numerically(t_sym *syms, int begin, int end);
-void			quick_sort_syms_same_ascii_numerically(t_sym *syms, int nsyms);
+void			quick_sort_syms(t_sym *syms, int nsyms, t_options options);
 
 int				handle_error(t_error error);
 
 void			handle_ar(char *ptr, char *name, t_options options);
 void			handle_fat(char *ptr, char *name, t_options options);
 void			handle_64(char *ptr, t_options options);
+
+void			print_syms(t_sym *syms, int nsyms);
 
 #endif
