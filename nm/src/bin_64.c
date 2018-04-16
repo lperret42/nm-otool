@@ -12,44 +12,38 @@
 
 #include "nm.h"
 
-t_sym		get_sym(char for_debug, unsigned long value, int n_sect,
-												char letter, char *name)
+t_sym		get_sym(char debug, unsigned long value, int n_sect, char letter)
 {
 	t_sym		sym;
 
-	if (DEBUG)
-	{
-		ft_printf("n_sect: %d\n", n_sect);
-		ft_printf("name: %s\n", name);
-	}
-	sym.for_debug = for_debug;
+	sym.for_debug = debug;
 	sym.value = (letter == 'u' || letter == 'U') ? -1 : value;
 	sym.n_sect = n_sect;
 	sym.letter = letter;
-	sym.name = name;
 	return (sym);
 }
 
-t_sym		*get_syms(int nsyms, int symoff, int stroff, char *ptr,
+t_sym		*get_syms(struct symtab_command *symtab, char *ptr,
 												char **sections_name)
 {
-	int					i;
+	uint32_t			i;
 	t_sym				*syms;
 	struct nlist_64		*array;
 	char				*section_name;
 	char				letter;
 
-	if (!(syms = (t_sym*)ft_memalloc(sizeof(t_sym) * nsyms)))
+	if (!(syms = (t_sym*)ft_memalloc(sizeof(t_sym) * symtab->nsyms)))
 		return (NULL);
-	array = (struct nlist_64 *)(ptr + symoff);
+	array = (struct nlist_64 *)(ptr + symtab->symoff);
 	i = 0;
-	while (i < nsyms)
+	while (i < symtab->nsyms)
 	{
 		section_name = array[i].n_sect == NO_SECT ? NULL :
 						sections_name[array[i].n_sect - 1];
 		letter = get_type(array[i].n_type, array[i].n_sect, section_name);
 		syms[i] = get_sym(array[i].n_type & N_STAB ? 1 : 0, array[i].n_value,
-			array[i].n_sect, letter, ptr + stroff + array[i].n_un.n_strx);
+												array[i].n_sect, letter);
+		syms[i].name = ptr + symtab->stroff + array[i].n_un.n_strx;
 		i++;
 	}
 	return (syms);
@@ -84,7 +78,7 @@ char		**get_sections_name(struct load_command *lc, uint32_t nb_sect)
 	return (sections_name);
 }
 
-uint32_t	get_nb_sections(struct load_command *lc, uint32_t ncmds)
+uint32_t	get_nb_sects(struct load_command *lc, uint32_t ncmds)
 {
 	struct segment_command_64	*seg;
 	uint32_t					i;
@@ -110,20 +104,19 @@ void		handle_64(char *ptr, t_options opts)
 	uint32_t				i;
 	struct mach_header_64	*header;
 	struct load_command		*lc;
-	char					**sections_name;
+	char					**sect_names;
 	t_sym					*syms;
 
 	header = (struct mach_header_64 *)ptr;
 	lc = (struct load_command *)(ptr + sizeof(*header));
-	sections_name = get_sections_name(lc, get_nb_sections(lc, header->ncmds));
+	if (!(sect_names = get_sections_name(lc, get_nb_sects(lc, header->ncmds))))
+		return ;    // maybe need to return an error
 	i = 0;
 	while (i < header->ncmds)
 	{
 		if (lc->cmd == LC_SYMTAB)
 		{
-			syms = get_syms(((struct symtab_command *)lc)->nsyms,
-				((struct symtab_command *)lc)->symoff,
-				((struct symtab_command *)lc)->stroff, ptr, sections_name);
+			syms = get_syms((struct symtab_command *)lc, ptr, sect_names);
 			quick_sort_syms(syms, ((struct symtab_command *)lc)->nsyms, opts);
 			print_syms(syms, ((struct symtab_command *)lc)->nsyms);
 			free(syms);
@@ -132,5 +125,5 @@ void		handle_64(char *ptr, t_options opts)
 		lc = (struct load_command*)((void*)lc + lc->cmdsize);
 		i++;
 	}
-	free(sections_name);
+	free(sect_names);
 }
