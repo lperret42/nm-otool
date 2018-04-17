@@ -70,6 +70,12 @@ int			handle_ar(char *ptr, char *file, t_options options)
 	t_ar			*ars;
 
 	arch = (void*)ptr + SARMAG;
+	if (DEBUG)
+	{
+		ft_printf("arch->ar_name: %s\n", arch->ar_name);
+		ft_printf("arch->ar_fmag: %s\n", arch->ar_fmag);
+		ft_printf("get_size(arch->ar_name): %d\n", get_size(arch->ar_name));
+	}
 	ran = (void*)ptr + sizeof(*arch) + SARMAG +
 							get_size(arch->ar_name) + sizeof(int);
 	size = *((int *)((void*)ptr + sizeof(*arch) + SARMAG +

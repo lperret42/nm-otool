@@ -36,6 +36,8 @@ int		nm(char *ptr, char *file, t_options options)
 		if (DEBUG == 1)
 			ft_printf("FAT binary\n");
 		return (handle_fat(ptr, file, options));
+		//return (handle_ar(ptr, file, options));
+		//return (handle_64(ptr, options));
 	}
 	else if (!ft_strncmp(ptr, ARMAG, SARMAG))
 	{

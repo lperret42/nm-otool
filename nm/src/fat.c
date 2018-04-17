@@ -60,7 +60,6 @@ int					handle_fat(char *ptr, char *name, t_options options)
 	offset = 0;
 	if (DEBUG)
 	{
-		ft_printf("CPU_TYPE_X86_64: %d\n", CPU_TYPE_X86_64);
 		ft_printf("sizeof(fat): %d\n", sizeof(fat));
 		ft_printf("sizeof(*fat): %d\n", sizeof(*fat));
 		ft_printf("sizeof(arch): %d\n", sizeof(arch));
@@ -76,42 +75,27 @@ int					handle_fat(char *ptr, char *name, t_options options)
 		if (DEBUG)
 		{
 			ft_printf("x: %u\n", x);
-			ft_printf("arch->cputype: %d\n", arch->cputype);
-			ft_printf("arch->cpusubtype: %d\n", arch->cpusubtype);
-			ft_printf("swap_uint32(arch->cputype): %d\n", swap_uint32(arch->cputype));
-			ft_printf("swap_uint32(arch->cpusubtype): %d\n", swap_uint32(arch->cpusubtype));
-			ft_printf("arch->offset: %u\n", arch->offset);
-			ft_printf("arch->size: %u\n", arch->size);
-			ft_printf("arch->align: %u\n", arch->align);
 		}
-		//if (swap_uint32(arch->cputype) == CPU_TYPE_X86_64)
 		if (DEBUG)
 		{
 			ft_printf("swap_uint32(arch->cputype): %u\n", swap_uint32(arch->cputype));
-			ft_printf("(cpu_type_t)CPU_TYPE_X86_64: %u\n", (cpu_type_t)CPU_TYPE_X86_64);
-			ft_printf("(cpu_type_t)CPU_TYPE_X86: %u\n", (cpu_type_t)CPU_TYPE_X86);
+			ft_printf("swap_uint32(arch->cpusubtype): %d\n", swap_uint32(arch->cpusubtype));
+			ft_printf("CPU_TYPE_X86_64: %u\n", CPU_TYPE_X86_64);
+			ft_printf("CPU_TYPE_X86: %u\n", CPU_TYPE_X86);
+			ft_printf("CPU_ARCH_ABI64: %u\n", CPU_ARCH_ABI64);
 		}
-		if (swap_uint32(arch->cputype) == (cpu_type_t)CPU_TYPE_X86_64)
-		if (swap_uint32(arch->cputype) == (cpu_type_t)CPU_TYPE_X86_64)
+		if (swap_uint32(arch->cputype) == CPU_TYPE_X86_64)
 		{
 			if (DEBUG)
-				ft_printf("CPU_TYPE_X86_64\n");
+				ft_printf("CPU_TYPE_X86_64 || CPU_ARCH_ABI64\n");
 			offset = arch->offset;
-			//break;
+			break;
+			nm(ptr + swap_uint32(offset), name, options);
 		}
 		if (DEBUG)
 			ft_printf("after offset = arch->offset\n");
-		//arch += sizeof(arch) / sizeof(void*);
 		arch = (void*)arch + sizeof(*arch);
-		//arch = (void*)arch + arch->align;
 		x--;
 	}
-	if (DEBUG)
-	{
-		ft_printf("offset: %u\n", offset);
-		ft_printf("end handle_fat\n");
-	}
-	if (offset == 0)
-		return 0;
 	return (nm(ptr + swap_uint32(offset), name, options));
 }

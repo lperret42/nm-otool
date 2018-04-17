@@ -102,12 +102,14 @@ void	quick_sort_syms_same_ascii_numerically(t_sym *syms, int nsyms, char r)
 	i = 0;
 	while (i < nsyms)
 	{
+		/*
 		if (DEBUG)
 		{
 			ft_printf("i: %d\n", i);
 			ft_printf("tmp: %s\n", tmp);
 			ft_printf("syms[i].name: %s\n", syms[i].name);
 		}
+		*/
 		if (tmp && !syms[i].for_debug && !ft_strcmp(tmp, syms[i].name))
 		{
 			if (DEBUG)
