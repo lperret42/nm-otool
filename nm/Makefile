@@ -11,7 +11,8 @@ SRC_PATH = ./src/
 INCLUDES_PATH = ./includes/
 OBJ_PATH = ./obj/
 
-SRC = main.c nm.c ar.c fat.c bin_64.c sort.c get_type.c print.c error.c
+SRC = main.c nm.c ar.c fat.c bin_64.c bin_32.c sort_ars.c swap_syms.c\
+	  sort_syms_ascii_reverse.c sort_syms.c get_type.c print.c error.c
 
 OBJ	= $(addprefix $(OBJ_PATH),$(SRC:.c=.o))
 

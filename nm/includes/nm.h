@@ -6,7 +6,7 @@
 /*   By: lperret <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/16 11:44:43 by lperret           #+#    #+#             */
-/*   Updated: 2018/04/17 10:13:35 by lperret          ###   ########.fr       */
+/*   Updated: 2018/04/17 15:00:01 by lperret          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@
 # include <stdlib.h>
 # include "libft.h"
 
-# define DEBUG					0
+# define DEBUG					1
 # define RECOGNIZED_OPTIONS		"gnpruUj"
 
 typedef enum	e_error
@@ -68,14 +68,17 @@ int				nm(char *ptr, char *name, t_options options);
 char			get_type(uint32_t type, int n_value, char *section_name);
 
 void			quick_sort_ars(t_ar *ars, int begin, int end);
+void			swap_sym(t_sym *syms, int a, int b);
+void			quick_sort_syms_ascii_reverse(t_sym *syms, int begin, int end);
 void			quick_sort_syms(t_sym *syms, int nsyms, t_options options);
 
 int				handle_error(t_error error);
 
 int				handle_ar(char *ptr, char *name, t_options options);
 int				handle_fat(char *ptr, char *name, t_options options);
+int				handle_32(char *ptr, t_options options);
 int				handle_64(char *ptr, t_options options);
 
-void			print_syms(t_sym *syms, int nsyms, t_options options);
+void			print_syms(t_sym *syms, int nsyms, t_options options, int bits);
 
 #endif

@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   bin_64.c                                           :+:      :+:    :+:   */
+/*   bin_32.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lperret <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/04/16 16:52:37 by lperret           #+#    #+#             */
-/*   Updated: 2018/04/17 12:38:43 by lperret          ###   ########.fr       */
+/*   Created: 2018/04/17 12:01:46 by lperret           #+#    #+#             */
+/*   Updated: 2018/04/17 12:38:58 by lperret          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,13 +29,13 @@ static t_sym		*get_syms(struct symtab_command *symtab, char *ptr,
 {
 	uint32_t			i;
 	t_sym				*syms;
-	struct nlist_64		*array;
+	struct nlist		*array;
 	char				*section_name;
 	char				letter;
 
 	if (!(syms = (t_sym*)ft_memalloc(sizeof(t_sym) * symtab->nsyms)))
 		return (NULL);
-	array = (struct nlist_64 *)(ptr + symtab->symoff);
+	array = (struct nlist *)(ptr + symtab->symoff);
 	i = 0;
 	while (i < symtab->nsyms)
 	{
@@ -53,8 +53,8 @@ static t_sym		*get_syms(struct symtab_command *symtab, char *ptr,
 static char			**get_sections_name(struct load_command *lc,
 														uint32_t nb_sect)
 {
-	struct segment_command_64	*seg;
-	struct section_64			*sec;
+	struct segment_command		*seg;
+	struct section				*sec;
 	uint32_t					i;
 	uint32_t					n;
 	char						**sections_name;
@@ -64,10 +64,10 @@ static char			**get_sections_name(struct load_command *lc,
 	i = 0;
 	while (i < nb_sect)
 	{
-		if (lc->cmd == LC_SEGMENT_64)
+		if (lc->cmd == LC_SEGMENT)
 		{
-			seg = (struct segment_command_64 *)lc;
-			sec = (struct section_64 *)((void*)seg + sizeof(*seg));
+			seg = (struct segment_command *)lc;
+			sec = (struct section *)((void*)seg + sizeof(*seg));
 			n = -1;
 			while (++n < seg->nsects)
 			{
@@ -82,7 +82,7 @@ static char			**get_sections_name(struct load_command *lc,
 
 static uint32_t		get_nb_sects(struct load_command *lc, uint32_t ncmds)
 {
-	struct segment_command_64	*seg;
+	struct segment_command		*seg;
 	uint32_t					i;
 	uint32_t					nb_sections;
 
@@ -90,9 +90,9 @@ static uint32_t		get_nb_sects(struct load_command *lc, uint32_t ncmds)
 	i = 0;
 	while (i < ncmds)
 	{
-		if (lc->cmd == LC_SEGMENT_64)
+		if (lc->cmd == LC_SEGMENT)
 		{
-			seg = (struct segment_command_64 *)lc;
+			seg = (struct segment_command *)lc;
 			nb_sections += seg->nsects;
 		}
 		lc = (struct load_command*)((void*)lc + lc->cmdsize);
@@ -101,15 +101,15 @@ static uint32_t		get_nb_sects(struct load_command *lc, uint32_t ncmds)
 	return (nb_sections);
 }
 
-int					handle_64(char *ptr, t_options opts)
+int					handle_32(char *ptr, t_options opts)
 {
 	uint32_t				i;
-	struct mach_header_64	*header;
+	struct mach_header		*header;
 	struct load_command		*lc;
 	char					**sect_names;
 	t_sym					*syms;
 
-	header = (struct mach_header_64 *)ptr;
+	header = (struct mach_header *)ptr;
 	lc = (struct load_command *)(ptr + sizeof(*header));
 	if (!(sect_names = get_sections_name(lc, get_nb_sects(lc, header->ncmds))))
 		return (-1);
@@ -119,16 +119,12 @@ int					handle_64(char *ptr, t_options opts)
 		if (lc->cmd == LC_SYMTAB)
 		{
 			syms = get_syms((struct symtab_command *)lc, ptr, sect_names);
-			if (DEBUG)
-				ft_printf("before quick_sort_syms\n");
 			quick_sort_syms(syms, ((struct symtab_command *)lc)->nsyms, opts);
-			if (DEBUG)
-				ft_printf("after quick_sort_syms\n");
-			print_syms(syms, ((struct symtab_command *)lc)->nsyms, opts, 64);
+			print_syms(syms, ((struct symtab_command *)lc)->nsyms, opts, 32);
 			free(syms);
 			break ;
 		}
-		lc = (struct load_command*)((void*)lc + lc->cmdsize);
+		lc = (struct load_command *)((void*)lc + lc->cmdsize);
 	}
 	free(sect_names);
 	return (0);

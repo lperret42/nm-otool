@@ -1,7 +1,6 @@
 #!/bin/bash
 path_script=`dirname $0`
 option=""
-option=""
 my_binary="$path_script/nm/ft_nm"
 my_binary="$my_binary$option"
 real_binary="nm"

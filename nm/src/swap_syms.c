@@ -1,28 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   error.c                                            :+:      :+:    :+:   */
+/*   swap_syms.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lperret <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/04/17 11:07:03 by lperret           #+#    #+#             */
-/*   Updated: 2018/04/17 11:07:09 by lperret          ###   ########.fr       */
+/*   Created: 2018/04/17 11:24:48 by lperret           #+#    #+#             */
+/*   Updated: 2018/04/17 11:24:55 by lperret          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "nm.h"
 
-int		handle_error(t_error error)
+void		swap_sym(t_sym *syms, int a, int b)
 {
-	if (error == UNRECOGNIZED_OPTION_ERROR)
-		ft_putendl("Unrecognized option.");
-	else if (error == OPENING_ERROR)
-		ft_putendl("Can't open file.");
-	else if (error == FSTAT_ERROR)
-		ft_putendl("fstat failure");
-	else if (error == MMAP_ERROR)
-		ft_putendl("mmap failure");
-	else if (error == MUNMAP_ERROR)
-		ft_putendl("mummap failure");
-	return (EXIT_FAILURE);
+	t_sym	tmp;
+
+	tmp = syms[a];
+	syms[a] = syms[b];
+	syms[b] = tmp;
 }
