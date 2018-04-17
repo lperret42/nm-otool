@@ -74,7 +74,7 @@ t_options	get_options(int ac, char **av)
 			else if (opt == 'n' || opt == 'p' || opt == 'r')
 				options.order = opt;
 			else if (opt == 'u' || opt == 'U')
-				options.undefined = opt;
+				options.undef = opt;
 			else
 				options.j = 1;
 		}
@@ -87,7 +87,7 @@ void		print_options(t_options options)
 	ft_printf("options.error: %d\n", options.error);
 	ft_printf("options.g: %d\n", options.g);
 	ft_printf("options.order: %c\n", options.order);
-	ft_printf("options.undefined: %c\n", options.undefined);
+	ft_printf("options.undef: %c\n", options.undef);
 	ft_printf("options.j: %d\n", options.j);
 }
 

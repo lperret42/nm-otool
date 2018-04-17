@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ar.c                                               :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: lperret <marvin@42.fr>                     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2018/04/17 10:07:35 by lperret           #+#    #+#             */
+/*   Updated: 2018/04/17 10:16:13 by lperret          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "nm.h"
 
 int			catch_size(char *name)
@@ -18,13 +30,13 @@ char		*catch_name(char *name)
 	return (ft_strstr(name, ARFMAG) + length);
 }
 
-void		process_ar(t_ar ar, char *file, t_options options)
+int			process_ar(t_ar ar, char *file, t_options options)
 {
 	ft_printf("\n%s(%s):\n", file, ar.name);
-	nm(ar.ptr, file, options);
+	return (nm(ar.ptr, file, options));
 }
 
-void		process_ars(t_ar *ars, int nb_ar, char *file, t_options options)
+int			process_ars(t_ar *ars, int nb_ar, char *file, t_options options)
 {
 	int		i;
 	t_ar	tmp;
@@ -33,15 +45,15 @@ void		process_ars(t_ar *ars, int nb_ar, char *file, t_options options)
 	i = 0;
 	while (i < nb_ar)
 	{
-		if (!(i > 0 && tmp.name == ars[i].name))   //doublon
-			process_ar(ars[i], file, options);
+		if (!(i > 0 && tmp.name == ars[i].name))
+			return (process_ar(ars[i], file, options));
 		tmp = ars[i];
 		i++;
 	}
+	return (0);
 }
 
-
-void		handle_ar(char *ptr, char *file, t_options options)
+int			handle_ar(char *ptr, char *file, t_options options)
 {
 	struct ar_hdr	*arch;
 	struct ranlib	*ran;
@@ -58,18 +70,8 @@ void		handle_ar(char *ptr, char *file, t_options options)
 	ran = (void*)test + sizeof(int);
 	size = *((int *)test);
 	size = size / sizeof(struct ranlib);
-	if (DEBUG)
-	{
-		ft_printf("size_fuck: %d\n", size_fuck);
-		ft_printf("size: %d\n", size);
-		ft_printf("sizeof(*arch): %d\n", sizeof(*arch));
-		ft_printf("sizeof(struct ranlib): %d\n", sizeof(struct ranlib));
-		ft_printf("size: %d\n", size);
-		ft_printf("extended: %d\n", ft_atoi(arch->ar_name +
-												ft_strlen(AR_EFMT1)));
-	}
 	if (!(ars = (t_ar*)(ft_memalloc(sizeof(t_ar) * size))))
-		return ;    // error to handle
+		return (-1);
 	i = 0;
 	while (i < size)
 	{
@@ -79,16 +81,9 @@ void		handle_ar(char *ptr, char *file, t_options options)
 		ars[i].strx = ran[i].ran_un.ran_strx;
 		ars[i].off = ran[i].ran_off;
 		ars[i].ptr = (void*)arch + sizeof(*arch) + size_fuck;
-		if (DEBUG)
-		{
-			ft_printf("\n%s(%s):\n", file, catch_name(arch->ar_name));
-			ft_printf("ran[i].ran_off:  %u\n", ran[i].ran_off);
-			ft_printf("ran[i].ran_un.ran_strx:  %u\n",
-												ran[i].ran_un.ran_strx);
-		}
 		i++;
 	}
 	process_ars(ars, size, file, options);
 	free(ars);
-	return ;
+	return (0);
 }

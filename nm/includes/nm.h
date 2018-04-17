@@ -6,7 +6,7 @@
 /*   By: lperret <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/16 11:44:43 by lperret           #+#    #+#             */
-/*   Updated: 2018/04/16 16:47:40 by lperret          ###   ########.fr       */
+/*   Updated: 2018/04/17 10:13:35 by lperret          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,23 +27,24 @@
 # define DEBUG					0
 # define RECOGNIZED_OPTIONS		"gnpruUj"
 
-typedef struct	s_options
-{
-	char	error;
-	char	g;
-	char	order;
-	char	undefined;
-	char	j;
-}				t_options;
-
-typedef enum		e_error
+typedef enum	e_error
 {
 	UNRECOGNIZED_OPTION_ERROR,
+	MALLOC_ERROR,
 	OPENING_ERROR,
 	FSTAT_ERROR,
 	MMAP_ERROR,
 	MUNMAP_ERROR,
-}					t_error;
+}				t_error;
+
+typedef struct	s_options
+{
+	char			error;
+	char			g;
+	char			order;
+	char			undef;
+	char			j;
+}				t_options;
 
 typedef struct	s_sym
 {
@@ -56,13 +57,13 @@ typedef struct	s_sym
 
 typedef struct	s_ar
 {
-	char		*name;
-	uint64_t	strx;
-	uint64_t	off;
-	void		*ptr;
+	char			*name;
+	uint64_t		strx;
+	uint64_t		off;
+	void			*ptr;
 }				t_ar;
 
-void			nm(char *ptr, char *name, t_options options);
+int				nm(char *ptr, char *name, t_options options);
 
 char			get_type(uint32_t type, int n_value, char *section_name);
 
@@ -71,10 +72,10 @@ void			quick_sort_syms(t_sym *syms, int nsyms, t_options options);
 
 int				handle_error(t_error error);
 
-void			handle_ar(char *ptr, char *name, t_options options);
-void			handle_fat(char *ptr, char *name, t_options options);
-void			handle_64(char *ptr, t_options options);
+int				handle_ar(char *ptr, char *name, t_options options);
+int				handle_fat(char *ptr, char *name, t_options options);
+int				handle_64(char *ptr, t_options options);
 
-void			print_syms(t_sym *syms, int nsyms);
+void			print_syms(t_sym *syms, int nsyms, t_options options);
 
 #endif

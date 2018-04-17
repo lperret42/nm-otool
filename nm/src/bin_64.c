@@ -6,7 +6,7 @@
 /*   By: lperret <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/16 16:52:37 by lperret           #+#    #+#             */
-/*   Updated: 2018/04/16 17:01:30 by lperret          ###   ########.fr       */
+/*   Updated: 2018/04/17 09:53:28 by lperret          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,7 +99,7 @@ uint32_t	get_nb_sects(struct load_command *lc, uint32_t ncmds)
 	return (nb_sections);
 }
 
-void		handle_64(char *ptr, t_options opts)
+int		handle_64(char *ptr, t_options opts)
 {
 	uint32_t				i;
 	struct mach_header_64	*header;
@@ -110,7 +110,7 @@ void		handle_64(char *ptr, t_options opts)
 	header = (struct mach_header_64 *)ptr;
 	lc = (struct load_command *)(ptr + sizeof(*header));
 	if (!(sect_names = get_sections_name(lc, get_nb_sects(lc, header->ncmds))))
-		return ;    // maybe need to return an error
+		return (-1);    // maybe need to return an error
 	i = 0;
 	while (i < header->ncmds)
 	{
@@ -118,7 +118,7 @@ void		handle_64(char *ptr, t_options opts)
 		{
 			syms = get_syms((struct symtab_command *)lc, ptr, sect_names);
 			quick_sort_syms(syms, ((struct symtab_command *)lc)->nsyms, opts);
-			print_syms(syms, ((struct symtab_command *)lc)->nsyms);
+			print_syms(syms, ((struct symtab_command *)lc)->nsyms, opts);
 			free(syms);
 			break ;
 		}
@@ -126,4 +126,5 @@ void		handle_64(char *ptr, t_options opts)
 		i++;
 	}
 	free(sect_names);
+	return (0);
 }

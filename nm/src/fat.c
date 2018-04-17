@@ -6,7 +6,7 @@ uint32_t	swap_uint32(uint32_t val)
 	return (val << 16) | (val >> 16);
 }
 
-void		handle_fat(char *ptr, char *name, t_options options)
+int			handle_fat(char *ptr, char *name, t_options options)
 {
 	struct fat_header	*fat;
 	struct fat_arch		*arch;
@@ -24,5 +24,5 @@ void		handle_fat(char *ptr, char *name, t_options options)
 		arch += sizeof(arch) / sizeof(void*);
 		x--;
 	}
-	nm(ptr + swap_uint32(offset), name, options);
+	return (nm(ptr + swap_uint32(offset), name, options));
 }

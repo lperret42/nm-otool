@@ -1,6 +1,6 @@
 #include "nm.h"
 
-void		nm(char *ptr, char *file, t_options options)
+int		nm(char *ptr, char *file, t_options options)
 {
 	unsigned int	magic_number;
 
@@ -11,29 +11,30 @@ void		nm(char *ptr, char *file, t_options options)
 	{
 		if (DEBUG == 1)
 			ft_printf("binary for 64 bits\n");
-		handle_64(ptr, options);
+		return (handle_64(ptr, options));
 	}
 	else if (magic_number == MH_MAGIC)
 	{
 		if (DEBUG == 1)
 			ft_printf("binary for 32 bits\n");
-		handle_64(ptr, options);    //need to write a handle_32 function
+		return (handle_64(ptr, options));    //need to write a handle_32 function
 	}
 	else if (magic_number == FAT_MAGIC || magic_number == FAT_CIGAM)
 	{
 		if (DEBUG == 1)
 			ft_printf("FAT binary\n");
-		handle_fat(ptr, file, options);
+		return (handle_fat(ptr, file, options));
 	}
 	else if (!ft_strncmp(ptr, ARMAG, SARMAG))
 	{
 		if (DEBUG == 1)
 			ft_printf("ar binary\n");
-		handle_ar(ptr, file, options);
+		return (handle_ar(ptr, file, options));
 	}
 	else
 	{
 		ft_printf("not a binary for 32 or 64 bits\n");
+		return (-1);
 		//handle_64(ptr, options);
 	}
 }
