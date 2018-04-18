@@ -12,7 +12,7 @@
 
 #include "nm.h"
 
-void		swap_ar(t_ar *ars, int a, int b)
+static void		swap_ar(t_ar *ars, int a, int b)
 {
 	t_ar	tmp;
 
@@ -21,7 +21,7 @@ void		swap_ar(t_ar *ars, int a, int b)
 	ars[b] = tmp;
 }
 
-void		quick_sort_ars(t_ar *ars, int begin, int end)
+void			quick_sort_ars(t_ar *ars, int begin, int end)
 {
 	int			left;
 	int			right;

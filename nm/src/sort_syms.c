@@ -12,7 +12,7 @@
 
 #include "nm.h"
 
-void	quick_sort_syms_numerically(t_sym *syms, int begin, int end)
+static void		quick_sort_syms_numerically(t_sym *syms, int begin, int end)
 {
 	int			left;
 	int			right;
@@ -38,7 +38,7 @@ void	quick_sort_syms_numerically(t_sym *syms, int begin, int end)
 	quick_sort_syms_numerically(syms, right + 1, end);
 }
 
-void	quick_sort_syms_numerically_reverse(t_sym *syms, int begin, int end)
+static void		quick_sort_syms_numerically_reverse(t_sym *syms, int begin, int end)
 {
 	int			left;
 	int			right;
@@ -64,7 +64,7 @@ void	quick_sort_syms_numerically_reverse(t_sym *syms, int begin, int end)
 	quick_sort_syms_numerically_reverse(syms, right + 1, end);
 }
 
-void	quick_sort_syms_ascii(t_sym *syms, int begin, int end)
+static void		quick_sort_syms_ascii(t_sym *syms, int begin, int end)
 {
 	int			left;
 	int			right;
@@ -90,57 +90,34 @@ void	quick_sort_syms_ascii(t_sym *syms, int begin, int end)
 	quick_sort_syms_ascii(syms, right + 1, end);
 }
 
-void	quick_sort_syms_same_ascii_numerically(t_sym *syms, int nsyms, char r)
+static void		quick_sort_syms_same_ascii_numerically(t_sym *syms,
+															int nsyms, char r)
 {
 	int			i;
 	int			begin;
 	char		*tmp;
 
-	if (DEBUG)
-		ft_printf("debut quick_sort_syms_same_ascii_numerically\n");
 	tmp = NULL;
 	i = 0;
 	while (i < nsyms)
 	{
-		/*
-		if (DEBUG)
+		if (tmp && !ft_strcmp(tmp, syms[i].name))
 		{
-			ft_printf("i: %d\n", i);
-			ft_printf("tmp: %s\n", tmp);
-			ft_printf("syms[i].name: %s\n", syms[i].name);
-		}
-		*/
-		if (tmp && !syms[i].for_debug && !ft_strcmp(tmp, syms[i].name))
-		{
-			if (DEBUG)
-				ft_printf("nsyms: %d\n", nsyms);
 			begin = i - 1;
-			//while (!ft_strcmp(tmp, syms[i].name) && i < nsyms)
-			while (i < nsyms && !ft_strcmp(tmp, syms[i].name))
-			{
-				if (DEBUG)
-					ft_printf("i: %d\n", i);
+			while (i < nsyms && (!ft_strcmp(tmp, syms[i].name) || syms[i].for_debug))
 				i++;
-			}
-			if (DEBUG)
-				ft_printf("yo2\n");
-			if (DEBUG)
-			{
-				ft_printf("begin: %d\n", begin);
-				ft_printf("i: %d\n", i);
-			}
 			if (r == 'n')
 				quick_sort_syms_numerically(&(syms[begin]), 0, i - begin - 1);
 			else
 				quick_sort_syms_numerically_reverse(&(syms[begin]), 0,
 														i - begin - 1);
 		}
-		tmp = syms[i].for_debug ? NULL : syms[i].name;
+		tmp = (syms[i].for_debug && i != 0) ? tmp : syms[i].name;
 		i++;
 	}
 }
 
-void	quick_sort_syms(t_sym *syms, int nsyms, t_options options)
+void			quick_sort_syms(t_sym *syms, int nsyms, t_options options)
 {
 	int		i;
 
@@ -148,17 +125,8 @@ void	quick_sort_syms(t_sym *syms, int nsyms, t_options options)
 		return ;
 	else if (!options.order)
 	{
-		if (DEBUG)
-			ft_printf("before ascii\n");
 		quick_sort_syms_ascii(syms, 0, nsyms - 1);
-		if (DEBUG)
-		{
-			ft_printf("after ascii\n");
-			ft_printf("before quick_sort_syms_same_ascii_numerically\n");
-		}
 		quick_sort_syms_same_ascii_numerically(syms, nsyms, 'n');
-		if (DEBUG)
-			ft_printf("after quick_sort_syms_same_ascii_numerically\n");
 	}
 	else if (options.order == 'n')
 	{
@@ -171,16 +139,7 @@ void	quick_sort_syms(t_sym *syms, int nsyms, t_options options)
 	}
 	else if (options.order == 'r')
 	{
-		if (DEBUG)
-			ft_printf("before ascii reverse\n");
 		quick_sort_syms_ascii_reverse(syms, 0, nsyms - 1);
-		if (DEBUG)
-		{
-			ft_printf("after ascii reverse\n");
-			ft_printf("before quick_sort_syms_same_ascii_numerically\n");
-		}
 		quick_sort_syms_same_ascii_numerically(syms, nsyms, 'r');
-		if (DEBUG)
-			ft_printf("after quick_sort_syms_same_ascii_numerically\n");
 	}
 }

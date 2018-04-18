@@ -24,17 +24,19 @@
 # include <stdlib.h>
 # include "libft.h"
 
-# define DEBUG					1
+# define DEBUG					0
 # define RECOGNIZED_OPTIONS		"gnpruUj"
 
 typedef enum	e_error
 {
+	NO_ERROR,
 	UNRECOGNIZED_OPTION_ERROR,
-	MALLOC_ERROR,
+	NOT_OBJECT_ERROR,
 	OPENING_ERROR,
 	FSTAT_ERROR,
 	MMAP_ERROR,
 	MUNMAP_ERROR,
+	MALLOC_ERROR,
 }				t_error;
 
 typedef struct	s_options
@@ -72,7 +74,7 @@ void			swap_sym(t_sym *syms, int a, int b);
 void			quick_sort_syms_ascii_reverse(t_sym *syms, int begin, int end);
 void			quick_sort_syms(t_sym *syms, int nsyms, t_options options);
 
-int				handle_error(t_error error);
+int				handle_error(t_error error, char *file);
 
 int				handle_ar(char *ptr, char *name, t_options options);
 int				handle_fat(char *ptr, char *name, t_options options);

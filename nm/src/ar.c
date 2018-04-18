@@ -12,7 +12,7 @@
 
 #include "nm.h"
 
-int			get_size(char *name)
+static int			get_size(char *name)
 {
 	int		x;
 	char	*word;
@@ -22,13 +22,13 @@ int			get_size(char *name)
 	return (x);
 }
 
-int			process_ar(t_ar ar, char *file, t_options options)
+static int			process_ar(t_ar ar, char *file, t_options options)
 {
 	ft_printf("\n%s(%s):\n", file, ar.name);
 	return (nm(ar.ptr, file, options));
 }
 
-int			process_ars(t_ar *ars, int nb_ar, char *file, t_options options)
+static int			process_ars(t_ar *ars, int nb_ar, char *file, t_options options)
 {
 	int		i;
 	t_ar	tmp;
@@ -38,15 +38,17 @@ int			process_ars(t_ar *ars, int nb_ar, char *file, t_options options)
 	while (i < nb_ar)
 	{
 		if (!(i > 0 && tmp.name == ars[i].name))
+		{
 			if (process_ar(ars[i], file, options) != 0)
 				return (-1);
+		}
 		tmp = ars[i];
 		i++;
 	}
 	return (0);
 }
 
-t_ar		get_ar(char *ptr, struct ranlib ran)
+static t_ar			get_ar(char *ptr, struct ranlib ran)
 {
 	struct ar_hdr	*arch;
 	int				size_fuck;
@@ -61,7 +63,7 @@ t_ar		get_ar(char *ptr, struct ranlib ran)
 	return (ar);
 }
 
-int			handle_ar(char *ptr, char *file, t_options options)
+int					handle_ar(char *ptr, char *file, t_options options)
 {
 	struct ar_hdr	*arch;
 	struct ranlib	*ran;
@@ -70,13 +72,7 @@ int			handle_ar(char *ptr, char *file, t_options options)
 	t_ar			*ars;
 
 	arch = (void*)ptr + SARMAG;
-	if (DEBUG)
-	{
-		ft_printf("arch->ar_name: %s\n", arch->ar_name);
-		ft_printf("arch->ar_fmag: %s\n", arch->ar_fmag);
-		ft_printf("get_size(arch->ar_name): %d\n", get_size(arch->ar_name));
-	}
-	ran = (void*)ptr + sizeof(*arch) + SARMAG +
+	ran = (void*)ptr + SARMAG + sizeof(*arch) +
 							get_size(arch->ar_name) + sizeof(int);
 	size = *((int *)((void*)ptr + sizeof(*arch) + SARMAG +
 											get_size(arch->ar_name)));

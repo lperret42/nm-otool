@@ -1,6 +1,6 @@
 #include "nm.h"
 
-int			handle_arg(int nb_real_arg, char *arg, t_options options)
+static int			handle_arg(int nb_real_arg, char *arg, t_options options)
 {
 	int				fd;
 	char			*ptr;
@@ -8,29 +8,29 @@ int			handle_arg(int nb_real_arg, char *arg, t_options options)
 
 	if ((fd = open(arg, O_RDONLY)) < 0)
 	{
-		ft_printf("%s: ", arg);
-		return (handle_error(OPENING_ERROR));
+		//ft_printf("%s: ", arg);
+		return (handle_error(OPENING_ERROR, arg));
 	}
 	else
 	{
 		if (nb_real_arg >= 2)
 			ft_printf("\n%s:\n", arg);
 		if (fstat(fd, &buf) < 0)
-			return (handle_error(FSTAT_ERROR));
+			return (handle_error(FSTAT_ERROR, arg));
 		else if ((ptr = mmap(0, buf.st_size, PROT_READ,
 							MAP_PRIVATE, fd, 0)) == MAP_FAILED)
-			return (handle_error(MMAP_ERROR));
+			return (handle_error(MMAP_ERROR, arg));
 		else
 		{
-			nm(ptr, arg, options);
+			handle_error(nm(ptr, arg, options), arg);
 			if (munmap(0, buf.st_size) < 0)
-				handle_error(MUNMAP_ERROR);
+				handle_error(MUNMAP_ERROR, arg);
 		}
 	}
 	return (0);
 }
 
-int			handle_args(int ac, char **av, t_options options)
+static int			handle_args(int ac, char **av, t_options options)
 {
 	int		i;
 	int		nb_real_arg;
@@ -52,10 +52,34 @@ int			handle_args(int ac, char **av, t_options options)
 	return (nb_errors > 0 ? EXIT_FAILURE : EXIT_SUCCESS);
 }
 
-t_options	get_options(int ac, char **av)
+static void		food_options(t_options *options, char *s)
+{
+	while(*s)
+	{
+		if (!ft_strchr(RECOGNIZED_OPTIONS, *s))
+		{
+			options->error = 1;
+			return ;
+		}
+		else
+		{
+			if (*s == 'g')
+				options->g = 1;
+			else if (*s == 'n' || *s == 'p' || *s == 'r')
+				options->order = *s;
+			else if (*s == 'u' || *s == 'U')
+				options->undef = *s;
+			else
+				options->j = 1;
+		}
+		s++;
+	}
+}
+
+
+static t_options	get_options(int ac, char **av)
 {
 	t_options	options;
-	char		opt;
 	int			i;
 
 	ft_bzero(&options, sizeof(options));
@@ -64,31 +88,10 @@ t_options	get_options(int ac, char **av)
 	{
 		if (av[i][0] != '-')
 			continue;
-		if (ft_strlen(av[i] + 1) > 1 || !ft_strstr(RECOGNIZED_OPTIONS, *(av + i) + 1))
-			options.error = 1;
 		else
-		{
-			opt = av[i][1];
-			if (opt == 'g')
-				options.g = 1;
-			else if (opt == 'n' || opt == 'p' || opt == 'r')
-				options.order = opt;
-			else if (opt == 'u' || opt == 'U')
-				options.undef = opt;
-			else
-				options.j = 1;
-		}
+			food_options(&options, av[i] + 1);
 	}
 	return options;
-}
-
-void		print_options(t_options options)
-{
-	ft_printf("options.error: %d\n", options.error);
-	ft_printf("options.g: %d\n", options.g);
-	ft_printf("options.order: %c\n", options.order);
-	ft_printf("options.undef: %c\n", options.undef);
-	ft_printf("options.j: %d\n", options.j);
 }
 
 int			main(int ac, char **av)
@@ -96,10 +99,8 @@ int			main(int ac, char **av)
 	t_options	options;
 
 	options = get_options(ac, av);
-	if (DEBUG)
-		print_options(options);
 	if (options.error)
-		return (handle_error(UNRECOGNIZED_OPTION_ERROR));
+		return (handle_error(UNRECOGNIZED_OPTION_ERROR, NULL));
 	if (ac < 2)
 		handle_arg(ac, "a.out", options);
 	return (handle_args(ac, av, options));

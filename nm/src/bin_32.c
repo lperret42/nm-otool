@@ -112,7 +112,7 @@ int					handle_32(char *ptr, t_options opts)
 	header = (struct mach_header *)ptr;
 	lc = (struct load_command *)(ptr + sizeof(*header));
 	if (!(sect_names = get_sections_name(lc, get_nb_sects(lc, header->ncmds))))
-		return (-1);
+		return (MALLOC_ERROR);
 	i = -1;
 	while (++i < header->ncmds)
 	{

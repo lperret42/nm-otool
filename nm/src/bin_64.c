@@ -112,18 +112,14 @@ int					handle_64(char *ptr, t_options opts)
 	header = (struct mach_header_64 *)ptr;
 	lc = (struct load_command *)(ptr + sizeof(*header));
 	if (!(sect_names = get_sections_name(lc, get_nb_sects(lc, header->ncmds))))
-		return (-1);
+		return (MALLOC_ERROR);
 	i = -1;
 	while (++i < header->ncmds)
 	{
 		if (lc->cmd == LC_SYMTAB)
 		{
 			syms = get_syms((struct symtab_command *)lc, ptr, sect_names);
-			if (DEBUG)
-				ft_printf("before quick_sort_syms\n");
 			quick_sort_syms(syms, ((struct symtab_command *)lc)->nsyms, opts);
-			if (DEBUG)
-				ft_printf("after quick_sort_syms\n");
 			print_syms(syms, ((struct symtab_command *)lc)->nsyms, opts, 64);
 			free(syms);
 			break ;

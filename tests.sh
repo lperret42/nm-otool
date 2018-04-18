@@ -1,11 +1,11 @@
 #!/bin/bash
 path_script=`dirname $0`
-option=""
+option=$1
 my_binary="$path_script/nm/ft_nm"
 my_binary="$my_binary$option"
 real_binary="nm"
 real_binary="$real_binary$option"
-path_tests=$1
+path_tests=$2
 echo -e "Test all files (except .c and .py) in "$path_tests": \n"
 
 for file in $( find $path_tests -type f )
