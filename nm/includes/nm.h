@@ -24,7 +24,7 @@
 # include <stdlib.h>
 # include "libft.h"
 
-# define DEBUG					0
+//# define DEBUG					0
 # define RECOGNIZED_OPTIONS		"gnpruUj"
 
 typedef enum	e_error

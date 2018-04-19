@@ -17,8 +17,6 @@ int		nm(char *ptr, char *file, t_options options)
 	unsigned int	magic_number;
 
 	magic_number = *(unsigned int*)ptr;
-	if (DEBUG == 1)
-		ft_printf("magic_number: %#x\n", magic_number);
 	if (magic_number == MH_MAGIC_64)
 		return (handle_64(ptr, options));
 	else if (magic_number == MH_MAGIC)

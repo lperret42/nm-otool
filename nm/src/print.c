@@ -16,7 +16,7 @@ static int		must_be_printed(char letter, t_options options)
 {
 	if (options.g && !(letter >= 'A' && letter <= 'Z'))
 		return (0);
-	if (options.undef == 'u' && (letter != 'u' || letter != 'U'))
+	if (options.undef == 'u' && (letter != 'u' && letter != 'U'))
 		return (0);
 	if (options.undef == 'U' && (letter == 'u' || letter == 'U'))
 		return (0);
