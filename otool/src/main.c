@@ -1,6 +1,6 @@
 #include "otool.h"
 
-static int			handle_arg(int nb_real_arg, char *arg)
+static int			handle_arg(char *arg)
 {
 	int				fd;
 	char			*ptr;
@@ -10,10 +10,6 @@ static int			handle_arg(int nb_real_arg, char *arg)
 		return (handle_error(OPENING_ERROR, arg));
 	else
 	{
-		//if (nb_real_arg >= 2)
-		//	ft_printf("\n%s:\n", arg);
-		nb_real_arg = -550000514;
-		ft_printf("%s:\n", arg);
 		if (fstat(fd, &buf) < 0)
 			return (handle_error(FSTAT_ERROR, arg));
 		else if ((ptr = mmap(0, buf.st_size, PROT_READ,
@@ -44,7 +40,7 @@ static int			handle_args(int ac, char **av)
 	{
 		if (av[i][0] == '-')
 			;
-		else if (handle_arg(nb_real_arg, av[i]) != 0)
+		else if (handle_arg(av[i]) != 0)
 			nb_errors++;
 		i++;
 	}

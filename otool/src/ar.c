@@ -24,8 +24,18 @@ static int			get_size(char *name)
 
 static int			process_ar(t_ar ar, char *file)
 {
-	ft_printf("\n%s(%s):\n", file, ar.name);
-	return (otool(ar.ptr, file));
+	unsigned int		magic_number;
+
+	ft_printf("%s(%s):\n", file, ar.name);
+	magic_number = *(unsigned int*)ar.ptr;
+	if (magic_number == MH_MAGIC_64)
+		return (handle_64(ar.ptr));
+	else if (magic_number == MH_MAGIC)
+		return (handle_32(ar.ptr));
+	else
+		return (-1);
+	//ft_printf("\n%s(%s):\n", file, ar.name);
+	//return (otool(ar.ptr, file));
 }
 
 static int			process_ars(t_ar *ars, int nb_ar, char *file)

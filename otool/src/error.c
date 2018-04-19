@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   error.c                                            :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: lperret <marvin@42.fr>                     +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/04/17 11:07:03 by lperret           #+#    #+#             */
-/*   Updated: 2018/04/17 11:07:09 by lperret          ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "otool.h"
 
 int		handle_error(t_error error, char *file)
@@ -22,7 +10,7 @@ int		handle_error(t_error error, char *file)
 	if (error == NO_ARG_ERROR)
 		ft_putendl_fd("at least one file must be specified", 2);
 	else if (error == NOT_OBJECT_ERROR)
-		ft_putendl_fd("The file was not recognized as a valid object file.\n", 2);
+		ft_putendl_fd("is not an object file", 2);
 	else if (error == OPENING_ERROR)
 		ft_putendl_fd("Can't open file.", 2);
 	else if (error == FSTAT_ERROR)
