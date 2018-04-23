@@ -6,7 +6,7 @@
 /*   By: lperret <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/17 10:07:35 by lperret           #+#    #+#             */
-/*   Updated: 2018/04/17 12:02:55 by lperret          ###   ########.fr       */
+/*   Updated: 2018/04/23 20:12:50 by lperret          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ static int			get_size(char *name)
 static int			process_ar(t_ar ar, char *file, t_options options)
 {
 	ft_printf("\n%s(%s):\n", file, ar.name);
-	return (nm(ar.ptr, file, options));
+	return (nm(ar.ptr, file, options, 0));
 }
 
 static int			process_ars(t_ar *ars, int nb_ar, char *file,

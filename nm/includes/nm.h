@@ -6,7 +6,7 @@
 /*   By: lperret <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/16 11:44:43 by lperret           #+#    #+#             */
-/*   Updated: 2018/04/23 14:47:42 by lperret          ###   ########.fr       */
+/*   Updated: 2018/04/23 21:34:20 by lperret          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@
 # include <stdlib.h>
 # include "libft.h"
 
+# define DEBUG					1
 # define RECOGNIZED_OPTIONS		"gnpruUj"
 
 typedef enum	e_error
@@ -36,6 +37,7 @@ typedef enum	e_error
 	MMAP_ERROR,
 	MUNMAP_ERROR,
 	MALLOC_ERROR,
+	FORMAT_ERROR,
 }				t_error;
 
 typedef struct	s_options
@@ -64,7 +66,10 @@ typedef struct	s_ar
 	void			*ptr;
 }				t_ar;
 
-int				nm(char *ptr, char *name, t_options options);
+void			**get_addr_max(void);
+int				check_addr(void **dst, void *addr, size_t size);
+
+int				nm(char *ptr, char *name, t_options options, int nb_real_arg);
 
 char			get_type(uint32_t type, int n_value, char *section_name);
 
@@ -73,11 +78,12 @@ void			swap_sym(t_sym *syms, int a, int b);
 void			quick_sort_syms_ascii_reverse(t_sym *syms, int begin, int end);
 void			quick_sort_syms(t_sym *syms, int nsyms, t_options options);
 
-int				handle_error(t_error error, char *file);
+int				handle_error(t_error error, char *file, int nb_real_arg);
 
 int				handle_ar(char *ptr, char *name, t_options options);
 int				handle_fat(char *ptr, char *name, t_options options);
 int				handle_32(char *ptr, t_options options);
+char			**get_section_names_64(struct load_command *lc);
 int				handle_64(char *ptr, t_options options);
 
 void			print_syms(t_sym *syms, int nsyms, t_options options, int bits);

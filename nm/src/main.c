@@ -6,7 +6,7 @@
 /*   By: lperret <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/23 14:57:33 by lperret           #+#    #+#             */
-/*   Updated: 2018/04/23 14:58:29 by lperret          ###   ########.fr       */
+/*   Updated: 2018/04/23 20:12:04 by lperret          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,22 +19,29 @@ static int			handle_arg(int nb_real_arg, char *arg, t_options options)
 	struct stat		buf;
 
 	if ((fd = open(arg, O_RDONLY)) < 0)
-		return (handle_error(OPENING_ERROR, arg));
+		//return (handle_error(OPENING_ERROR, arg));
+		return (handle_error(OPENING_ERROR, arg, nb_real_arg));
 	else
 	{
-		if (nb_real_arg >= 2)
-			ft_printf("\n%s:\n", arg);
+		//if (nb_real_arg >= 2)
+		//	ft_printf("\n%s:\n", arg);
 		if (fstat(fd, &buf) < 0)
-			return (handle_error(FSTAT_ERROR, arg));
-		else if ((ptr = mmap(0, buf.st_size, PROT_READ,
+			//return (handle_error(FSTAT_ERROR, arg));
+			return (handle_error(FSTAT_ERROR, arg, nb_real_arg));
+		if ((ptr = mmap(0, buf.st_size, PROT_READ,
 							MAP_PRIVATE, fd, 0)) == MAP_FAILED)
-			return (handle_error(MMAP_ERROR, arg));
-		else
-		{
-			handle_error(nm(ptr, arg, options), arg);
-			if (munmap(0, buf.st_size) < 0)
-				handle_error(MUNMAP_ERROR, arg);
-		}
+			//return (handle_error(MMAP_ERROR, arg));
+			return (handle_error(MMAP_ERROR, arg, nb_real_arg));
+		if (DEBUG)
+			ft_printf("buf.st_size: %u\n", buf.st_size);
+		get_addr_max()[0] = (void*)ptr;
+		get_addr_max()[1] = (void*)ptr + buf.st_size;
+		if (DEBUG)
+			ft_printf("addr_max: %p\n", *get_addr_max);
+		handle_error(nm(ptr, arg, options, nb_real_arg), arg, nb_real_arg);
+		if (munmap(0, buf.st_size) < 0)
+			//handle_error(MUNMAP_ERROR, arg);
+			handle_error(MUNMAP_ERROR, arg, nb_real_arg);
 	}
 	return (0);
 }
@@ -108,7 +115,7 @@ int					main(int ac, char **av)
 
 	options = get_options(ac, av);
 	if (options.error)
-		return (handle_error(UNRECOGNIZED_OPTION_ERROR, NULL));
+		return (handle_error(UNRECOGNIZED_OPTION_ERROR, NULL, 0));
 	if (ac < 2)
 		handle_arg(ac, "a.out", options);
 	return (handle_args(ac, av, options));
