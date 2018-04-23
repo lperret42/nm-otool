@@ -28,7 +28,8 @@ static int			process_ar(t_ar ar, char *file, t_options options)
 	return (nm(ar.ptr, file, options));
 }
 
-static int			process_ars(t_ar *ars, int nb_ar, char *file, t_options options)
+static int			process_ars(t_ar *ars, int nb_ar, char *file,
+														t_options options)
 {
 	int		i;
 	t_ar	tmp;
@@ -51,15 +52,15 @@ static int			process_ars(t_ar *ars, int nb_ar, char *file, t_options options)
 static t_ar			get_ar(char *ptr, struct ranlib ran)
 {
 	struct ar_hdr	*arch;
-	int				size_fuck;
+	int				size;
 	t_ar			ar;
 
 	arch = (void*)ptr + ran.ran_off;
-	size_fuck = get_size(arch->ar_name);
+	size = get_size(arch->ar_name);
 	ar.name = ft_strstr(arch->ar_name, ARFMAG) + ft_strlen(ARFMAG);
 	ar.strx = ran.ran_un.ran_strx;
 	ar.off = ran.ran_off;
-	ar.ptr = (void*)arch + sizeof(*arch) + size_fuck;
+	ar.ptr = (void*)arch + sizeof(*arch) + size;
 	return (ar);
 }
 

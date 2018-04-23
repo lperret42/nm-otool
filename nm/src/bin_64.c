@@ -118,7 +118,8 @@ int					handle_64(char *ptr, t_options opts)
 	{
 		if (lc->cmd == LC_SYMTAB)
 		{
-			syms = get_syms((struct symtab_command *)lc, ptr, sect_names);
+			if (!(syms = get_syms((struct symtab_command *)lc, ptr, sect_names)))
+				return (MALLOC_ERROR);
 			quick_sort_syms(syms, ((struct symtab_command *)lc)->nsyms, opts);
 			print_syms(syms, ((struct symtab_command *)lc)->nsyms, opts, 64);
 			free(syms);

@@ -7,10 +7,7 @@ static int			handle_arg(int nb_real_arg, char *arg, t_options options)
 	struct stat		buf;
 
 	if ((fd = open(arg, O_RDONLY)) < 0)
-	{
-		//ft_printf("%s: ", arg);
 		return (handle_error(OPENING_ERROR, arg));
-	}
 	else
 	{
 		if (nb_real_arg >= 2)

@@ -34,17 +34,19 @@ int					handle_fat(char *ptr, char *name, t_options options)
 {
 	struct fat_header	*fat;
 	struct fat_arch		*arch;
+	uint32_t			i;
 	uint32_t			n;
 
 	fat = (struct fat_header *)ptr;
 	n = swap_uint32(fat->nfat_arch);
 	arch = (void*)ptr + sizeof(*fat);
-	while (n)
+	i = 0;
+	while (i < n)
 	{
-		if (swap_uint32(arch->cputype) == CPU_TYPE_X86_64)
+		if ((swap_uint32(arch->cputype) & CPU_ARCH_ABI64) == CPU_ARCH_ABI64)
 			break;
 		arch = (void*)arch + sizeof(*arch);
-		n--;
+		i++;
 	}
 	return (nm(ptr + swap_uint32(arch->offset), name, options));
 }

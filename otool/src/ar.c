@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   ar.c                                               :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: lperret <marvin@42.fr>                     +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/04/17 10:07:35 by lperret           #+#    #+#             */
-/*   Updated: 2018/04/17 12:02:55 by lperret          ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "otool.h"
 
 static int			get_size(char *name)
@@ -33,9 +21,7 @@ static int			process_ar(t_ar ar, char *file)
 	else if (magic_number == MH_MAGIC)
 		return (handle_32(ar.ptr));
 	else
-		return (-1);
-	//ft_printf("\n%s(%s):\n", file, ar.name);
-	//return (otool(ar.ptr, file));
+		return (NOT_OBJECT_ERROR);
 }
 
 static int			process_ars(t_ar *ars, int nb_ar, char *file)
@@ -61,15 +47,15 @@ static int			process_ars(t_ar *ars, int nb_ar, char *file)
 static t_ar			get_ar(char *ptr, struct ranlib ran)
 {
 	struct ar_hdr	*arch;
-	int				size_fuck;
+	int				size;
 	t_ar			ar;
 
 	arch = (void*)ptr + ran.ran_off;
-	size_fuck = get_size(arch->ar_name);
+	size = get_size(arch->ar_name);
 	ar.name = ft_strstr(arch->ar_name, ARFMAG) + ft_strlen(ARFMAG);
 	ar.strx = ran.ran_un.ran_strx;
 	ar.off = ran.ran_off;
-	ar.ptr = (void*)arch + sizeof(*arch) + size_fuck;
+	ar.ptr = (void*)arch + sizeof(*arch) + size;
 	return (ar);
 }
 
