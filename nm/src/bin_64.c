@@ -6,7 +6,7 @@
 /*   By: lperret <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/16 16:52:37 by lperret           #+#    #+#             */
-/*   Updated: 2018/04/17 12:38:43 by lperret          ###   ########.fr       */
+/*   Updated: 2018/04/23 14:56:24 by lperret          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,7 @@ static t_sym		*get_syms(struct symtab_command *symtab, char *ptr,
 		syms[i].name = ptr + symtab->stroff + array[i].n_un.n_strx;
 		i++;
 	}
+	free(sections_name);
 	return (syms);
 }
 
@@ -101,7 +102,7 @@ static uint32_t		get_nb_sects(struct load_command *lc, uint32_t ncmds)
 	return (nb_sections);
 }
 
-int					handle_64(char *ptr, t_options opts)
+int					handle_64(char *p, t_options opts)
 {
 	uint32_t				i;
 	struct mach_header_64	*header;
@@ -109,8 +110,8 @@ int					handle_64(char *ptr, t_options opts)
 	char					**sect_names;
 	t_sym					*syms;
 
-	header = (struct mach_header_64 *)ptr;
-	lc = (struct load_command *)(ptr + sizeof(*header));
+	header = (struct mach_header_64 *)p;
+	lc = (struct load_command *)(p + sizeof(*header));
 	if (!(sect_names = get_sections_name(lc, get_nb_sects(lc, header->ncmds))))
 		return (MALLOC_ERROR);
 	i = -1;
@@ -118,7 +119,7 @@ int					handle_64(char *ptr, t_options opts)
 	{
 		if (lc->cmd == LC_SYMTAB)
 		{
-			if (!(syms = get_syms((struct symtab_command *)lc, ptr, sect_names)))
+			if (!(syms = get_syms((struct symtab_command *)lc, p, sect_names)))
 				return (MALLOC_ERROR);
 			quick_sort_syms(syms, ((struct symtab_command *)lc)->nsyms, opts);
 			print_syms(syms, ((struct symtab_command *)lc)->nsyms, opts, 64);
@@ -127,6 +128,5 @@ int					handle_64(char *ptr, t_options opts)
 		}
 		lc = (struct load_command*)((void*)lc + lc->cmdsize);
 	}
-	free(sect_names);
 	return (0);
 }

@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: lperret <marvin@42.fr>                     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2018/04/23 14:57:33 by lperret           #+#    #+#             */
+/*   Updated: 2018/04/23 14:58:29 by lperret          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "nm.h"
 
 static int			handle_arg(int nb_real_arg, char *arg, t_options options)
@@ -49,9 +61,9 @@ static int			handle_args(int ac, char **av, t_options options)
 	return (nb_errors > 0 ? EXIT_FAILURE : EXIT_SUCCESS);
 }
 
-static void		food_options(t_options *options, char *s)
+static void			food_options(t_options *options, char *s)
 {
-	while(*s)
+	while (*s)
 	{
 		if (!ft_strchr(RECOGNIZED_OPTIONS, *s))
 		{
@@ -73,7 +85,6 @@ static void		food_options(t_options *options, char *s)
 	}
 }
 
-
 static t_options	get_options(int ac, char **av)
 {
 	t_options	options;
@@ -88,10 +99,10 @@ static t_options	get_options(int ac, char **av)
 		else
 			food_options(&options, av[i] + 1);
 	}
-	return options;
+	return (options);
 }
 
-int			main(int ac, char **av)
+int					main(int ac, char **av)
 {
 	t_options	options;
 

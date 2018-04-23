@@ -6,7 +6,7 @@
 /*   By: lperret <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/16 16:52:37 by lperret           #+#    #+#             */
-/*   Updated: 2018/04/17 12:38:43 by lperret          ###   ########.fr       */
+/*   Updated: 2018/04/23 15:02:25 by lperret          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,6 @@ static void		print_text_section_64(uint64_t addr, uint32_t size, char *ptr)
 	ft_printf("\n");
 }
 
-
 static void		handle_lc_segment_64(struct segment_command_64 *seg, char *ptr)
 {
 	struct section_64	*sec;
@@ -58,7 +57,7 @@ static void		handle_lc_segment_64(struct segment_command_64 *seg, char *ptr)
 	}
 }
 
-int					handle_64(char *ptr)
+int				handle_64(char *ptr)
 {
 	uint32_t				i;
 	struct mach_header_64	*header;

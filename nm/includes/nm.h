@@ -6,7 +6,7 @@
 /*   By: lperret <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/16 11:44:43 by lperret           #+#    #+#             */
-/*   Updated: 2018/04/17 15:00:01 by lperret          ###   ########.fr       */
+/*   Updated: 2018/04/23 14:47:42 by lperret          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,6 @@
 # include <stdlib.h>
 # include "libft.h"
 
-//# define DEBUG					0
 # define RECOGNIZED_OPTIONS		"gnpruUj"
 
 typedef enum	e_error

@@ -6,7 +6,7 @@
 /*   By: lperret <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/17 11:07:30 by lperret           #+#    #+#             */
-/*   Updated: 2018/04/17 15:55:35 by lperret          ###   ########.fr       */
+/*   Updated: 2018/04/23 14:54:41 by lperret          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ static uint32_t		swap_uint32(uint32_t nb)
 				*((unsigned char *)&nb + (nb_octet - 1 - i));
 		i++;
 	}
-	return ret;
+	return (ret);
 }
 
 int					handle_fat(char *ptr, char *name, t_options options)
@@ -44,9 +44,11 @@ int					handle_fat(char *ptr, char *name, t_options options)
 	while (i < n)
 	{
 		if ((swap_uint32(arch->cputype) & CPU_ARCH_ABI64) == CPU_ARCH_ABI64)
-			break;
+			break ;
 		arch = (void*)arch + sizeof(*arch);
 		i++;
 	}
+	if (!arch->offset)
+		return (0);
 	return (nm(ptr + swap_uint32(arch->offset), name, options));
 }

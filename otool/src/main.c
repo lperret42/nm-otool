@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: lperret <marvin@42.fr>                     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2018/04/23 15:02:54 by lperret           #+#    #+#             */
+/*   Updated: 2018/04/23 15:03:05 by lperret          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "otool.h"
 
 static int			handle_arg(char *arg)
@@ -47,7 +59,7 @@ static int			handle_args(int ac, char **av)
 	return (nb_errors > 0 ? EXIT_FAILURE : EXIT_SUCCESS);
 }
 
-int			main(int ac, char **av)
+int					main(int ac, char **av)
 {
 	if (ac < 2)
 		return (handle_error(NO_ARG_ERROR, NULL));

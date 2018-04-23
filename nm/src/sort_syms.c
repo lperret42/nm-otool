@@ -6,7 +6,7 @@
 /*   By: lperret <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/17 11:10:36 by lperret           #+#    #+#             */
-/*   Updated: 2018/04/17 15:00:27 by lperret          ###   ########.fr       */
+/*   Updated: 2018/04/23 14:59:08 by lperret          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,8 @@ static void		quick_sort_syms_numerically(t_sym *syms, int begin, int end)
 	quick_sort_syms_numerically(syms, right + 1, end);
 }
 
-static void		quick_sort_syms_numerically_reverse(t_sym *syms, int begin, int end)
+static void		quick_sort_syms_numerically_reverse(t_sym *syms, int begin,
+																	int end)
 {
 	int			left;
 	int			right;
@@ -104,7 +105,8 @@ static void		quick_sort_syms_same_ascii_numerically(t_sym *syms,
 		if (tmp && !ft_strcmp(tmp, syms[i].name))
 		{
 			begin = i - 1;
-			while (i < nsyms && (!ft_strcmp(tmp, syms[i].name) || syms[i].for_debug))
+			while (i < nsyms && (!ft_strcmp(tmp, syms[i].name) ||
+														syms[i].for_debug))
 				i++;
 			if (r == 'n')
 				quick_sort_syms_numerically(&(syms[begin]), 0, i - begin - 1);

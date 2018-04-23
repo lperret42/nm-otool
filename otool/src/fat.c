@@ -6,7 +6,7 @@
 /*   By: lperret <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/17 11:07:30 by lperret           #+#    #+#             */
-/*   Updated: 2018/04/17 15:55:35 by lperret          ###   ########.fr       */
+/*   Updated: 2018/04/23 15:01:29 by lperret          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,25 +27,28 @@ static uint32_t		swap_uint32(uint32_t nb)
 				*((unsigned char *)&nb + (nb_octet - 1 - i));
 		i++;
 	}
-	return ret;
+	return (ret);
 }
 
 int					handle_fat(char *ptr, char *name)
 {
 	struct fat_header	*fat;
 	struct fat_arch		*arch;
+	uint32_t			i;
 	uint32_t			n;
 
 	fat = (struct fat_header *)ptr;
 	n = swap_uint32(fat->nfat_arch);
 	arch = (void*)ptr + sizeof(*fat);
-	while (n)
+	i = 0;
+	while (i < n)
 	{
-		//yif (swap_uint32(arch->cputype) == CPU_TYPE_X86_64)
 		if ((swap_uint32(arch->cputype) & CPU_ARCH_ABI64) == CPU_ARCH_ABI64)
-			break;
+			break ;
 		arch = (void*)arch + sizeof(*arch);
-		n--;
+		i++;
 	}
+	if (!arch->offset)
+		return (0);
 	return (otool(ptr + swap_uint32(arch->offset), name));
 }
