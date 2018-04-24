@@ -24,7 +24,7 @@ int		handle_error(t_error error, char *file, int nb_real_arg)
 		ft_putstr_fd(": ", 2);
 	}
 	if (error == UNRECOGNIZED_OPTION_ERROR)
-		ft_putendl_fd("Unrecognized option", 2);
+		ft_putendl_fd("Unrecognized flag", 2);
 	else if (error == NOT_OBJECT_ERROR)
 		ft_putendl_fd("The file was not recognized as a valid object file\n",
 																		2);

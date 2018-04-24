@@ -6,13 +6,14 @@
 /*   By: lperret <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/23 14:57:33 by lperret           #+#    #+#             */
-/*   Updated: 2018/04/23 20:12:04 by lperret          ###   ########.fr       */
+/*   Updated: 2018/04/24 11:49:08 by lperret          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "nm.h"
 
-static int			handle_arg(int nb_real_arg, char *arg, t_options options)
+//static int			handle_arg(int nb_real_arg, char *arg, t_flags flags)
+static int			handle_arg(int nb_real_arg, char *arg)
 {
 	int				fd;
 	char			*ptr;
@@ -34,11 +35,16 @@ static int			handle_arg(int nb_real_arg, char *arg, t_options options)
 			return (handle_error(MMAP_ERROR, arg, nb_real_arg));
 		if (DEBUG)
 			ft_printf("buf.st_size: %u\n", buf.st_size);
+		glob()->filename = arg;
+		glob()->ptr = ptr;
+		glob()->filesize = buf.st_size;
+
 		get_addr_max()[0] = (void*)ptr;
 		get_addr_max()[1] = (void*)ptr + buf.st_size;
 		if (DEBUG)
 			ft_printf("addr_max: %p\n", *get_addr_max);
-		handle_error(nm(ptr, arg, options, nb_real_arg), arg, nb_real_arg);
+		//handle_error(nm(ptr, arg, flags, nb_real_arg), arg, nb_real_arg);
+		handle_error(nm(ptr, arg, nb_real_arg), arg, nb_real_arg);
 		if (munmap(0, buf.st_size) < 0)
 			//handle_error(MUNMAP_ERROR, arg);
 			handle_error(MUNMAP_ERROR, arg, nb_real_arg);
@@ -46,7 +52,8 @@ static int			handle_arg(int nb_real_arg, char *arg, t_options options)
 	return (0);
 }
 
-static int			handle_args(int ac, char **av, t_options options)
+//static int			handle_args(int ac, char **av, t_flags flags)
+static int			handle_args(int ac, char **av)
 {
 	int		i;
 	int		nb_real_arg;
@@ -61,62 +68,76 @@ static int			handle_args(int ac, char **av, t_options options)
 	{
 		if (av[i][0] == '-')
 			;
-		else if (handle_arg(nb_real_arg, av[i], options) != 0)
+		//else if (handle_arg(nb_real_arg, av[i], flags) != 0)
+		else if (handle_arg(nb_real_arg, av[i]) != 0)
 			nb_errors++;
 		i++;
 	}
 	return (nb_errors > 0 ? EXIT_FAILURE : EXIT_SUCCESS);
 }
 
-static void			food_options(t_options *options, char *s)
+//static void			food_flags(t_flags *flags, char *s)
+static void			food_flags(char *s)
 {
 	while (*s)
 	{
 		if (!ft_strchr(RECOGNIZED_OPTIONS, *s))
 		{
-			options->error = 1;
+			//flags->error = 1;
+			glob()->flags.error = 1;
 			return ;
 		}
 		else
 		{
 			if (*s == 'g')
-				options->g = 1;
+				//flags->g = 1;
+				glob()->flags.g = 1;
 			else if (*s == 'n' || *s == 'p' || *s == 'r')
-				options->order = *s;
+				//flags->order = *s;
+				glob()->flags.order = *s;
 			else if (*s == 'u' || *s == 'U')
-				options->undef = *s;
+				//flags->undef = *s;
+				glob()->flags.undef = *s;
 			else
-				options->j = 1;
+				//flags->j = 1;
+				glob()->flags.j = 1;
 		}
 		s++;
 	}
 }
 
-static t_options	get_options(int ac, char **av)
+//static t_flags	get_flags(int ac, char **av)
+static void		get_flags(int ac, char **av)
 {
-	t_options	options;
+	//t_flags	flags;
 	int			i;
 
-	ft_bzero(&options, sizeof(options));
+	//ft_bzero(&flags, sizeof(flags));
 	i = 0;
 	while (++i < ac)
 	{
 		if (av[i][0] != '-')
 			continue;
 		else
-			food_options(&options, av[i] + 1);
+			//food_flags(&flags, av[i] + 1);
+			food_flags(av[i] + 1);
 	}
-	return (options);
+	//return (flags);
 }
 
 int					main(int ac, char **av)
 {
-	t_options	options;
+	//t_flags	flags;
 
-	options = get_options(ac, av);
-	if (options.error)
+	ft_bzero(glob(), sizeof(*glob()));
+	//flags = get_flags(ac, av);
+	get_flags(ac, av);
+	//if (flags.error)
+	if (glob()->flags.error)
 		return (handle_error(UNRECOGNIZED_OPTION_ERROR, NULL, 0));
 	if (ac < 2)
-		handle_arg(ac, "a.out", options);
-	return (handle_args(ac, av, options));
+		//handle_arg(ac, "a.out", flags);
+		handle_arg(ac, "a.out");
+	//return (handle_args(ac, av, flags));
+	return (handle_args(ac, av));
 }

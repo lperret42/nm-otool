@@ -1,10 +1,10 @@
 #!/bin/bash
 path_script=`dirname $0`
-option=$1
+flag=$1
 my_binary="$path_script/ft_nm"
-my_binary="$my_binary$option"
+my_binary="$my_binary$flag"
 real_binary="nm"
-real_binary="$real_binary$option"
+real_binary="$real_binary$flag"
 path_tests=$2
 echo -e "Test all files (except .c and .py) in "$path_tests": \n"
 

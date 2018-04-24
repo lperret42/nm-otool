@@ -6,7 +6,7 @@
 /*   By: lperret <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/17 12:01:46 by lperret           #+#    #+#             */
-/*   Updated: 2018/04/23 14:56:46 by lperret          ###   ########.fr       */
+/*   Updated: 2018/04/24 12:18:23 by lperret          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,7 +102,7 @@ static uint32_t		get_nb_sects(struct load_command *lc, uint32_t ncmds)
 	return (nb_sections);
 }
 
-int					handle_32(char *p, t_options opts)
+int					handle_32(char *p, t_flags flags)
 {
 	uint32_t				i;
 	struct mach_header		*header;
@@ -121,8 +121,8 @@ int					handle_32(char *p, t_options opts)
 		{
 			if (!(syms = get_syms((struct symtab_command *)lc, p, sect_names)))
 				return (MALLOC_ERROR);
-			quick_sort_syms(syms, ((struct symtab_command *)lc)->nsyms, opts);
-			print_syms(syms, ((struct symtab_command *)lc)->nsyms, opts, 32);
+			quick_sort_syms(syms, ((struct symtab_command *)lc)->nsyms, flags);
+			print_syms(syms, ((struct symtab_command *)lc)->nsyms, flags, 32);
 			free(syms);
 			break ;
 		}

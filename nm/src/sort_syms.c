@@ -119,18 +119,18 @@ static void		quick_sort_syms_same_ascii_numerically(t_sym *syms,
 	}
 }
 
-void			quick_sort_syms(t_sym *syms, int nsyms, t_options options)
+void			quick_sort_syms(t_sym *syms, int nsyms, t_flags flags)
 {
 	int		i;
 
-	if (options.order == 'p')
+	if (flags.order == 'p')
 		return ;
-	else if (!options.order)
+	else if (!flags.order)
 	{
 		quick_sort_syms_ascii(syms, 0, nsyms - 1);
 		quick_sort_syms_same_ascii_numerically(syms, nsyms, 'n');
 	}
-	else if (options.order == 'n')
+	else if (flags.order == 'n')
 	{
 		quick_sort_syms_numerically(syms, 0, nsyms - 1);
 		i = 0;
@@ -139,7 +139,7 @@ void			quick_sort_syms(t_sym *syms, int nsyms, t_options options)
 		if (i >= 2)
 			quick_sort_syms_ascii(syms, 0, i - 1);
 	}
-	else if (options.order == 'r')
+	else if (flags.order == 'r')
 	{
 		quick_sort_syms_ascii_reverse(syms, 0, nsyms - 1);
 		quick_sort_syms_same_ascii_numerically(syms, nsyms, 'r');

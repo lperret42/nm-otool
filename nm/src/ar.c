@@ -6,7 +6,7 @@
 /*   By: lperret <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/17 10:07:35 by lperret           #+#    #+#             */
-/*   Updated: 2018/04/23 20:12:50 by lperret          ###   ########.fr       */
+/*   Updated: 2018/04/24 13:52:28 by lperret          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,14 +22,16 @@ static int			get_size(char *name)
 	return (x);
 }
 
-static int			process_ar(t_ar ar, char *file, t_options options)
+//static int			process_ar(t_ar ar, char *file, t_flags flags)
+static int			process_ar(t_ar ar, char *file)
 {
 	ft_printf("\n%s(%s):\n", file, ar.name);
-	return (nm(ar.ptr, file, options, 0));
+	//return (nm(ar.ptr, file, flags, 0));
+	return (nm(ar.ptr, file, 0));
 }
 
-static int			process_ars(t_ar *ars, int nb_ar, char *file,
-														t_options options)
+static int			process_ars(t_ar *ars, int nb_ar, char *file)
+														//t_flags flags)
 {
 	int		i;
 	t_ar	tmp;
@@ -40,7 +42,8 @@ static int			process_ars(t_ar *ars, int nb_ar, char *file,
 	{
 		if (!(i > 0 && tmp.name == ars[i].name))
 		{
-			if (process_ar(ars[i], file, options) != 0)
+			//if (process_ar(ars[i], file, flags) != 0)
+			if (process_ar(ars[i], file) != 0)
 				return (-1);
 		}
 		tmp = ars[i];
@@ -49,13 +52,16 @@ static int			process_ars(t_ar *ars, int nb_ar, char *file,
 	return (0);
 }
 
-static t_ar			get_ar(char *ptr, struct ranlib ran)
+//static t_ar			get_ar(char *ptr, struct ranlib ran)
+static t_ar			get_ar(struct ar_hdr *arch)
 {
-	struct ar_hdr	*arch;
+	//struct ar_hdr	*arch;
+	struct ranlib	ran;
 	int				size;
 	t_ar			ar;
 
-	arch = (void*)ptr + ran.ran_off;
+	//arch = (void*)ptr + ran.ran_off;
+	ran = *((struct ranlib *)arch);
 	size = get_size(arch->ar_name);
 	ar.name = ft_strstr(arch->ar_name, ARFMAG) + ft_strlen(ARFMAG);
 	ar.strx = ran.ran_un.ran_strx;
@@ -64,7 +70,8 @@ static t_ar			get_ar(char *ptr, struct ranlib ran)
 	return (ar);
 }
 
-int					handle_ar(char *ptr, char *file, t_options options)
+//int					handle_ar(char *ptr, char *file, t_flags flags)
+int					handle_ar(char *ptr, char *file)
 {
 	struct ar_hdr	*arch;
 	struct ranlib	*ran;
@@ -81,12 +88,16 @@ int					handle_ar(char *ptr, char *file, t_options options)
 	if (!(ars = (t_ar*)(ft_memalloc(sizeof(t_ar) * size))))
 		return (-1);
 	i = 0;
-	while (i < size)
+	//while (i < size)
+	while ((void*)arch < (void*)(glob()->ptr + glob()->filesize))
 	{
-		ars[i] = get_ar(ptr, ran[i]);
-		i++;
+		//ars[i] = get_ar(ptr, ran[i]);
+		ars[i] = get_ar(arch);
+		arch = (void*)arch + sizeof(*arch) + ft_atoi(arch->ar_size);
+		//i++;
 	}
-	process_ars(ars, size, file, options);
+	//process_ars(ars, size, file, flags);
+	process_ars(ars, size, file);
 	free(ars);
 	return (0);
 }

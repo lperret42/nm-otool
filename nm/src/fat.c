@@ -6,7 +6,7 @@
 /*   By: lperret <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/17 11:07:30 by lperret           #+#    #+#             */
-/*   Updated: 2018/04/23 20:13:06 by lperret          ###   ########.fr       */
+/*   Updated: 2018/04/24 10:39:53 by lperret          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,8 @@ static uint32_t		swap_uint32(uint32_t nb)
 	return (ret);
 }
 
-int					handle_fat(char *ptr, char *name, t_options options)
+//int					handle_fat(char *ptr, char *name, t_flags flags)
+int					handle_fat(char *ptr, char *name)
 {
 	struct fat_header	*fat;
 	struct fat_arch		*arch;
@@ -50,5 +51,6 @@ int					handle_fat(char *ptr, char *name, t_options options)
 	}
 	if (!arch->offset)
 		return (0);
-	return (nm(ptr + swap_uint32(arch->offset), name, options, 0));
+	//return (nm(ptr + swap_uint32(arch->offset), name, flags, 0));
+	return (nm(ptr + swap_uint32(arch->offset), name, 0));
 }

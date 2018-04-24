@@ -6,26 +6,26 @@
 /*   By: lperret <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/17 10:07:10 by lperret           #+#    #+#             */
-/*   Updated: 2018/04/17 13:36:18 by lperret          ###   ########.fr       */
+/*   Updated: 2018/04/24 13:26:44 by lperret          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "nm.h"
 
-static int		must_be_printed(char letter, t_options options)
+static int		must_be_printed(char letter, t_flags flags)
 {
-	if (options.g && !(letter >= 'A' && letter <= 'Z'))
+	if (flags.g && !(letter >= 'A' && letter <= 'Z'))
 		return (0);
-	if (options.undef == 'u' && (letter != 'u' && letter != 'U'))
+	if (flags.undef == 'u' && (letter != 'u' && letter != 'U'))
 		return (0);
-	if (options.undef == 'U' && (letter == 'u' || letter == 'U'))
+	if (flags.undef == 'U' && (letter == 'u' || letter == 'U'))
 		return (0);
 	return (1);
 }
 
-static void		print_sym(t_sym sym, t_options options, int bits)
+static void		print_sym(t_sym sym, t_flags flags, int bits)
 {
-	if (!options.j && options.undef != 'u')
+	if (!flags.j && flags.undef != 'u')
 	{
 		if (sym.n_sect != NO_SECT || sym.letter == 'I')
 		{
@@ -48,15 +48,18 @@ static void		print_sym(t_sym sym, t_options options, int bits)
 	ft_printf("%s\n", sym.name);
 }
 
-void			print_syms(t_sym *syms, int nsyms, t_options options, int bits)
+void			print_syms(int nsyms)
 {
 	long	i;
 
 	i = -1;
 	while (++i < nsyms)
 	{
-		if (must_be_printed(syms[i].letter, options))
-			if (syms[i].name && !syms[i].for_debug)
-				print_sym(syms[i], options, bits);
+		//if (must_be_printed(syms[i].letter, flags))
+		if (must_be_printed(glob()->syms[i].letter, glob()->flags))
+			//if (syms[i].name && !syms[i].for_debug)
+			if (glob()->syms[i].name && !glob()->syms[i].for_debug)
+				//print_sym(syms[i], flags, bits);
+				print_sym(glob()->syms[i], glob()->flags, glob()->nbits);
 	}
 }

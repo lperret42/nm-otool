@@ -25,3 +25,10 @@ int			check_addr(void **dst, void *src, size_t size)
 		*dst = src;
 	return (0);
 }
+
+t_glob		*glob(void)
+{
+	static t_glob	glob;
+
+	return (&glob);
+}
