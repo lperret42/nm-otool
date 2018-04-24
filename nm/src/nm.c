@@ -31,7 +31,7 @@ int		nm(char *ptr, char *file, int nb_real_arg)
 	else if (magic_number == FAT_MAGIC || magic_number == FAT_CIGAM)
 		return (handle_fat(ptr, file));
 	else if (!ft_strncmp(ptr, ARMAG, SARMAG))
-		return (handle_ar(ptr, file));
+		return (handle_ar(ptr));
 	else
 	{
 		if (DEBUG)

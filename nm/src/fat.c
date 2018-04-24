@@ -44,6 +44,7 @@ int					handle_fat(char *ptr, char *name)
 	i = 0;
 	while (i < n)
 	{
+		//if ((swap_uint32(arch->cputype) & CPU_ARCH_ABI64) == CPU_ARCH_ABI64)
 		if ((swap_uint32(arch->cputype) & CPU_ARCH_ABI64) == CPU_ARCH_ABI64)
 			break ;
 		arch = (void*)arch + sizeof(*arch);

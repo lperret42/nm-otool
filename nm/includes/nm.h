@@ -24,7 +24,7 @@
 # include <stdlib.h>
 # include "libft.h"
 
-# define DEBUG					0
+# define DEBUG					1
 # define RECOGNIZED_OPTIONS		"gnpruUj"
 
 typedef struct mach_header			header;
@@ -102,7 +102,7 @@ void			quick_sort_syms(t_sym *syms, int nsyms, t_flags flags);
 
 int				handle_error(t_error error, char *file, int nb_real_arg);
 
-int				handle_ar(char *ptr, char *name);
+int				handle_ar(char *ptr);
 int				handle_fat(char *ptr, char *name);
 int				handle_32_64(char *ptr);
 int				get_sec_names(struct load_command *lc, uint32_t ncmds);
