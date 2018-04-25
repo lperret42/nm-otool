@@ -16,6 +16,8 @@ static long			get_nb_sects(struct load_command *lc, uint32_t ncmds, t_infos *inf
 			ft_printf("in get_nb_sects, i = %u\n", i);
 		if (lc->cmd == (infos->nbits == 32 ? LC_SEGMENT : LC_SEGMENT_64))
 		{
+			if (DEBUG)
+				ft_printf("in get_nb_sects, before tmp\n");
 			tmp = (infos->nbits == 32 ? sizeof(seg_com) : sizeof(seg_com_64));
 			if (check_addr(NULL, (void*)lc, tmp, *infos) != 0)
 				return (-1);

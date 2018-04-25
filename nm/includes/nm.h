@@ -65,14 +65,17 @@ typedef struct	s_sym
 
 typedef struct	s_infos
 {
-	t_flags			flags;
-	int				nbfiles;
-	char			*filename;
-	char			*ptr;
-	uint64_t		filesize;
-	int				nbits;
-	char			**sec_names;
-	t_sym			*syms;
+	t_flags					flags;
+	int						nbfiles;
+	char					*filename;
+	char					*ptr;
+	uint64_t				filesize;
+	int						nbits;
+	int						swap;
+	struct load_command		*lc;
+	uint32_t				ncmds;
+	char					**sec_names;
+	t_sym					*syms;
 }				t_infos;
 
 int				nm(t_infos infos);
@@ -93,6 +96,6 @@ int				handle_error(t_error error, char *file, int nb_real_arg);
 
 int				get_sec_names(struct load_command *lc, uint32_t ncmds, t_infos *infos);
 
-void			print_syms(t_infos infos, int nsyms);
+int				print_syms(t_infos infos, int nsyms);
 
 #endif

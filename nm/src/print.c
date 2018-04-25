@@ -23,20 +23,20 @@ static int		must_be_printed(char letter, t_flags flags)
 	return (1);
 }
 
-static void		print_sym(t_sym sym, t_flags flags, int bits)
+static int		print_sym(t_sym sym, t_infos infos)
 {
-	if (!flags.j && flags.undef != 'u')
+	if (!infos.flags.j && infos.flags.undef != 'u')
 	{
 		if (sym.n_sect != NO_SECT || sym.letter == 'I')
 		{
-			if (bits == 32)
+			if (infos.nbits == 32)
 				ft_printf("%08x", sym.value);
 			else
 				ft_printf("%016lx", sym.value);
 		}
 		else
 		{
-			if (bits == 32)
+			if (infos.nbits == 32)
 				ft_printf("%s", "        ");
 			else
 				ft_printf("%s", "                ");
@@ -45,10 +45,13 @@ static void		print_sym(t_sym sym, t_flags flags, int bits)
 		ft_printf("%c", sym.letter);
 		ft_printf(" ");
 	}
+	if (check_addr(NULL, sym.name, ft_strlen(sym.name), infos) != 0)
+		return (FORMAT_ERROR);
 	ft_printf("%s\n", sym.name);
+	return (0);
 }
 
-void			print_syms(t_infos infos, int nsyms)
+int				print_syms(t_infos infos, int nsyms)
 {
 	long	i;
 
@@ -60,6 +63,9 @@ void			print_syms(t_infos infos, int nsyms)
 			//if (syms[i].name && !syms[i].for_debug)
 			if (infos.syms[i].name && !infos.syms[i].for_debug)
 				//print_sym(syms[i], flags, bits);
-				print_sym(infos.syms[i], infos.flags, infos.nbits);
+				if (print_sym(infos.syms[i], infos) != 0)
+					return (FORMAT_ERROR);
 	}
+	free(infos.syms);
+	return (0);
 }
