@@ -6,7 +6,7 @@
 /*   By: lperret <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/16 11:44:43 by lperret           #+#    #+#             */
-/*   Updated: 2018/04/24 13:52:45 by lperret          ###   ########.fr       */
+/*   Updated: 2018/04/25 15:06:40 by lperret          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,50 +63,36 @@ typedef struct	s_sym
 	char			*name;
 }				t_sym;
 
-typedef struct	s_ar
-{
-	char			*name;
-	uint64_t		strx;
-	uint64_t		off;
-	void			*ptr;
-}				t_ar;
-
-typedef struct	s_glob
+typedef struct	s_infos
 {
 	t_flags			flags;
+	int				nbfiles;
 	char			*filename;
 	char			*ptr;
 	uint64_t		filesize;
 	int				nbits;
 	char			**sec_names;
-	struct segment_command		*seg_32;
-	struct segment_command_64	*seg_64;
-	struct section				*sec_32;
-	struct section_64			*sec_64;
 	t_sym			*syms;
-}				t_glob;
+}				t_infos;
 
-t_glob			*glob(void);
+int				nm(t_infos infos);
 
-void			**get_addr_max(void);
-int				check_addr(void **dst, void *addr, size_t size);
+int				check_addr(void **dst, void *addr, size_t size, t_infos infos);
 
-int				nm(char *ptr, char *name, int nb_real_arg);
+int				handle_ars(t_infos infos);
+int				handle_fats(t_infos infos);
+int				handle_32_64(t_infos infos);
 
 char			get_type(uint32_t type, int n_value, char *section_name);
 
-void			quick_sort_ars(t_ar *ars, int begin, int end);
 void			swap_sym(t_sym *syms, int a, int b);
 void			quick_sort_syms_ascii_reverse(t_sym *syms, int begin, int end);
 void			quick_sort_syms(t_sym *syms, int nsyms, t_flags flags);
 
 int				handle_error(t_error error, char *file, int nb_real_arg);
 
-int				handle_ar(char *ptr);
-int				handle_fat(char *ptr, char *name);
-int				handle_32_64(char *ptr);
-int				get_sec_names(struct load_command *lc, uint32_t ncmds);
+int				get_sec_names(struct load_command *lc, uint32_t ncmds, t_infos *infos);
 
-void			print_syms(int nsyms);
+void			print_syms(t_infos infos, int nsyms);
 
 #endif

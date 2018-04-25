@@ -6,7 +6,7 @@
 /*   By: lperret <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/17 10:07:10 by lperret           #+#    #+#             */
-/*   Updated: 2018/04/24 13:26:44 by lperret          ###   ########.fr       */
+/*   Updated: 2018/04/25 12:27:43 by lperret          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ static void		print_sym(t_sym sym, t_flags flags, int bits)
 	ft_printf("%s\n", sym.name);
 }
 
-void			print_syms(int nsyms)
+void			print_syms(t_infos infos, int nsyms)
 {
 	long	i;
 
@@ -56,10 +56,10 @@ void			print_syms(int nsyms)
 	while (++i < nsyms)
 	{
 		//if (must_be_printed(syms[i].letter, flags))
-		if (must_be_printed(glob()->syms[i].letter, glob()->flags))
+		if (must_be_printed(infos.syms[i].letter, infos.flags))
 			//if (syms[i].name && !syms[i].for_debug)
-			if (glob()->syms[i].name && !glob()->syms[i].for_debug)
+			if (infos.syms[i].name && !infos.syms[i].for_debug)
 				//print_sym(syms[i], flags, bits);
-				print_sym(glob()->syms[i], glob()->flags, glob()->nbits);
+				print_sym(infos.syms[i], infos.flags, infos.nbits);
 	}
 }

@@ -6,7 +6,7 @@
 /*   By: lperret <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/17 10:07:35 by lperret           #+#    #+#             */
-/*   Updated: 2018/04/24 13:52:28 by lperret          ###   ########.fr       */
+/*   Updated: 2018/04/25 13:46:22 by lperret          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,72 +21,39 @@ static int			get_size(char *name)
 	x = ft_atoi(word);
 	return (x);
 }
-/*
-//static int			process_ar(t_ar ar, char *file, t_flags flags)
-static int			process_ar(t_ar ar, char *file)
+
+static int			handle_ar(struct ar_hdr *arch, t_infos infos)
 {
-	ft_printf("\n%s(%s):\n", file, ar.name);
-	//return (nm(ar.ptr, file, flags, 0));
-	return (nm(ar.ptr, file, 0));
+	t_infos		new_infos;
+
+	if (check_addr(NULL, (void*)arch, sizeof(*arch), infos) != 0)
+		return (FORMAT_ERROR);
+	if (check_addr(NULL, (void*)arch + sizeof(*arch),
+									ft_atoi(arch->ar_size), infos) != 0)
+		return (FORMAT_ERROR);
+	ft_memcpy(&new_infos, &infos, sizeof(t_infos));
+	new_infos.nbfiles = 0;
+	new_infos.filename = (void*)arch + sizeof(*arch);
+	new_infos.ptr = (void*)arch + sizeof(*arch) + get_size(arch->ar_name);
+	new_infos.filesize = sizeof(*arch) + ft_atoi(arch->ar_size);
+	new_infos.sec_names = NULL;;
+	new_infos.syms = NULL;;
+	ft_printf("\n%s(%s):\n", infos.filename, (void*)arch + sizeof(*arch));
+	return (nm(new_infos));
 }
 
-
-static int			process_ars(t_ar *ars, int nb_ar, char *file)
-														//t_flags flags)
+int					handle_ars(t_infos infos)
 {
-	int		i;
-	t_ar	tmp;
-
-	quick_sort_ars(ars, 0, nb_ar - 1);
-	i = 0;
-	while (i < nb_ar)
-	{
-		if (!(i > 0 && tmp.name == ars[i].name))
-		{
-			//if (process_ar(ars[i], file, flags) != 0)
-			if (process_ar(ars[i], file) != 0)
-				return (-1);
-		}
-		tmp = ars[i];
-		i++;
-	}
-	return (0);
-}
-
-//static t_ar			get_ar(char *ptr, struct ranlib ran)
-static t_ar			get_ar(struct ar_hdr *arch)
-{
-	//struct ar_hdr	*arch;
-	struct ranlib	ran;
-	int				size;
-	t_ar			ar;
-
-	//arch = (void*)ptr + ran.ran_off;
-	ran = *((struct ranlib *)arch);
-	size = get_size(arch->ar_name);
-	ar.name = ft_strstr(arch->ar_name, ARFMAG) + ft_strlen(ARFMAG);
-	ar.strx = ran.ran_un.ran_strx;
-	ar.off = ran.ran_off;
-	ar.ptr = (void*)arch + sizeof(*arch) + size;
-	return (ar);
-}
-*/
-
-void				print_arch(struct ar_hdr *arch)
-{
-	ft_printf("\n%s(%s):\n", glob()->filename, (void*)arch + sizeof(*arch));
-	nm((void*)arch + + sizeof(*arch) + get_size(arch->ar_name), NULL, 0);
-}
-
-int					handle_ar(char *ptr)
-{
+	int				error;
 	struct ar_hdr	*arch;
 
-	arch = (void*)ptr + SARMAG;
+	arch = (void*)infos.ptr + SARMAG;
 	arch = (void*)arch + sizeof(*arch) + ft_atoi(arch->ar_size);
-	while ((void*)arch < (void*)(glob()->ptr + glob()->filesize))
+	while ((void*)arch < (void*)(infos.ptr + infos.filesize))
 	{
-		print_arch(arch);
+		error = handle_ar(arch, infos);
+		if (error != NO_ERROR)
+			return (error);
 		arch = (void*)arch + sizeof(*arch) + ft_atoi(arch->ar_size);
 	}
 	return (0);
