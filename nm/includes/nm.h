@@ -6,7 +6,7 @@
 /*   By: lperret <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/16 11:44:43 by lperret           #+#    #+#             */
-/*   Updated: 2018/04/26 16:47:59 by lperret          ###   ########.fr       */
+/*   Updated: 2018/04/26 17:40:24 by lperret          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,13 +26,13 @@
 
 # define RECOGNIZED_OPTIONS		"gnpruUj"
 
-typedef struct mach_header			header;
-typedef struct mach_header_64		header_64;
-typedef struct fat_arch				fat_ar;
-typedef struct fat_arch_64			fat_ar_64;
-typedef struct symtab_command		sym_com;
-typedef struct segment_command		seg_com;
-typedef struct segment_command_64	seg_com_64;
+typedef struct mach_header			t_header;
+typedef struct mach_header_64		t_header_64;
+typedef struct fat_arch				t_fat_ar;
+typedef struct fat_arch_64			t_fat_ar_64;
+typedef struct symtab_command		t_sym_com;
+typedef struct segment_command		t_seg_com;
+typedef struct segment_command_64	t_seg_com_64;
 
 typedef enum	e_error
 {
@@ -41,7 +41,6 @@ typedef enum	e_error
 	NOT_OBJECT_ERROR,
 	OPENING_ERROR,
 	FSTAT_ERROR,
-	EMPTY_FILE_ERROR,
 	MMAP_ERROR,
 	MUNMAP_ERROR,
 	MALLOC_ERROR,
@@ -87,7 +86,7 @@ typedef struct	s_infos
 
 int				nm(t_infos infos);
 
-int				check_addr(void **dst, void *addr, size_t size, t_infos infos);
+int				check(void **dst, void *addr, size_t size, t_infos infos);
 int				check_sym_name(char *name, t_infos infos);
 
 int				handle_ars(t_infos infos);

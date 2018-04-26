@@ -6,7 +6,7 @@
 /*   By: lperret <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/17 11:07:03 by lperret           #+#    #+#             */
-/*   Updated: 2018/04/26 16:08:23 by lperret          ###   ########.fr       */
+/*   Updated: 2018/04/26 17:29:22 by lperret          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,8 @@
 
 int		handle_error(t_error error, t_infos infos)
 {
-	if (error && infos.filename && error != MALLOC_ERROR && error != FORMAT_ERROR)
+	if (error && infos.filename &&
+								error != MALLOC_ERROR && error != FORMAT_ERROR)
 	{
 		ft_putstr_fd(infos.filename, 2);
 		ft_putstr_fd(": ", 2);
@@ -28,8 +29,6 @@ int		handle_error(t_error error, t_infos infos)
 		ft_putendl_fd("Can't open file", 2);
 	else if (error == FSTAT_ERROR)
 		ft_putendl_fd("fstat failure", 2);
-	else if (error == EMPTY_FILE_ERROR)
-		ft_putendl_fd("empty file", 2);
 	else if (error == MMAP_ERROR)
 		ft_putendl_fd("mmap failure", 2);
 	else if (error == MUNMAP_ERROR)

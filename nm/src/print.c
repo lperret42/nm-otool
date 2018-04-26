@@ -45,7 +45,7 @@ static int		print_sym(t_sym sym, t_infos infos)
 		ft_printf("%c", sym.letter);
 		ft_printf(" ");
 	}
-	if (check_addr(NULL, sym.name, ft_strlen(sym.name), infos) != 0)
+	if (check(NULL, sym.name, ft_strlen(sym.name), infos) != 0)
 		return (FORMAT_ERROR);
 	ft_printf("%s\n", sym.name);
 	return (0);

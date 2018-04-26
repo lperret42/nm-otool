@@ -6,7 +6,7 @@
 /*   By: lperret <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/23 14:57:33 by lperret           #+#    #+#             */
-/*   Updated: 2018/04/26 16:40:28 by lperret          ###   ########.fr       */
+/*   Updated: 2018/04/26 17:39:07 by lperret          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ static int			handle_arg(char *arg, t_infos infos)
 		if (fstat(fd, &buf) < 0)
 			return (handle_error(FSTAT_ERROR, infos));
 		if (buf.st_size == 0)
-			return (handle_error(EMPTY_FILE_ERROR, infos));
+			return (handle_error(NOT_OBJECT_ERROR, infos));
 		if ((ptr = mmap(0, buf.st_size, PROT_READ,
 							MAP_PRIVATE, fd, 0)) == MAP_FAILED)
 			return (handle_error(MMAP_ERROR, infos));
@@ -82,7 +82,7 @@ static void			food_flags(char *s, t_infos *infos)
 	}
 }
 
-static void		get_flags(int ac, char **av, t_infos *infos)
+static void			get_flags(int ac, char **av, t_infos *infos)
 {
 	int			i;
 

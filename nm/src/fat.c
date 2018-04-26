@@ -6,7 +6,7 @@
 /*   By: lperret <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/17 11:07:30 by lperret           #+#    #+#             */
-/*   Updated: 2018/04/26 16:25:00 by lperret          ###   ########.fr       */
+/*   Updated: 2018/04/26 17:42:44 by lperret          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ static int		handle_cpu_type(uint32_t cputype, t_infos inf)
 	return (-1);
 }
 
-static int		handle_fat_32(fat_ar *arch, t_infos inf)
+static int		handle_fat_32(t_fat_ar *arch, t_infos inf)
 {
 	t_infos		new_inf;
 	uint32_t	cputype;
@@ -41,7 +41,7 @@ static int		handle_fat_32(fat_ar *arch, t_infos inf)
 		return (0);
 	offset = swap32(arch->offset, inf.swap);
 	size = swap32(arch->size, inf.swap);
-	if (check_addr(NULL, (void*)inf.ptr + offset, size, inf) != 0)
+	if (check(NULL, (void*)inf.ptr + offset, size, inf) != 0)
 		return (FORMAT_ERROR);
 	ft_memcpy(&new_inf, &inf, sizeof(t_infos));
 	new_inf.nbfiles = 0;
@@ -52,7 +52,7 @@ static int		handle_fat_32(fat_ar *arch, t_infos inf)
 	return (nm(new_inf));
 }
 
-static int		handle_fat_64(fat_ar_64 *arch, t_infos inf)
+static int		handle_fat_64(t_fat_ar_64 *arch, t_infos inf)
 {
 	t_infos		new_inf;
 	uint32_t	cputype;
@@ -64,7 +64,7 @@ static int		handle_fat_64(fat_ar_64 *arch, t_infos inf)
 		return (0);
 	offset = swap64(arch->offset, inf.swap);
 	size = swap64(arch->size, inf.swap);
-	if (check_addr(NULL, (void*)inf.ptr + offset, size, inf) != 0)
+	if (check(NULL, (void*)inf.ptr + offset, size, inf) != 0)
 		return (FORMAT_ERROR);
 	ft_memcpy(&new_inf, &inf, sizeof(t_infos));
 	new_inf.nbfiles = 0;
@@ -75,7 +75,7 @@ static int		handle_fat_64(fat_ar_64 *arch, t_infos inf)
 	return (nm(new_inf));
 }
 
-static int		check_host(t_infos inf, void *arch,
+static int		host(t_infos inf, void *arch,
 						uint32_t arch_size, uint32_t nfat_arch)
 {
 	uint32_t			i;
@@ -85,8 +85,8 @@ static int		check_host(t_infos inf, void *arch,
 	while (i < nfat_arch)
 	{
 		cputype = swap32(inf.nbits == 32 ?
-				((fat_ar *)arch)->cputype :
-				((fat_ar_64 *)arch)->cputype, inf.swap);
+				((t_fat_ar *)arch)->cputype :
+				((t_fat_ar_64 *)arch)->cputype, inf.swap);
 		if (cputype == CPU_TYPE_X86_64)
 			return (1);
 		arch = (void*)arch + arch_size;
@@ -99,28 +99,27 @@ int				handle_fats(t_infos inf)
 {
 	int					error;
 	struct fat_header	*fat;
-	void				*arch;
-	uint32_t			arch_size;
+	void				*ar;
+	uint32_t			ar_size;
 	uint32_t			i;
 
-	if (check_addr((void**)&fat, inf.ptr, sizeof(*fat), inf) != 0)
+	if (check((void**)&fat, inf.ptr, sizeof(*fat), inf) != 0)
 		return (FORMAT_ERROR);
-	arch = (void*)inf.ptr + sizeof(*fat);
-	arch_size = inf.nbits == 32 ? sizeof(fat_ar) : sizeof(fat_ar_64);
-	if (check_addr(NULL, arch, arch_size * swap32(fat->nfat_arch, inf.swap), inf) != 0)
+	ar = (void*)inf.ptr + sizeof(*fat);
+	ar_size = inf.nbits == 32 ? sizeof(t_fat_ar) : sizeof(t_fat_ar_64);
+	if (check(NULL, ar, ar_size * swap32(fat->nfat_arch, inf.swap), inf) != 0)
 		return (FORMAT_ERROR);
-	inf.host_cpu = check_host(inf, arch, arch_size, swap32(fat->nfat_arch, inf.swap));
+	inf.host_cpu = host(inf, ar, ar_size, swap32(fat->nfat_arch, inf.swap));
 	i = -1;
 	while (++i < swap32(fat->nfat_arch, inf.swap))
 	{
-		error = (inf.nbits == 32 ? handle_fat_32((fat_ar *)arch, inf) :
-				handle_fat_64((fat_ar_64 *)arch, inf));
-		if (error != NO_ERROR)
+		if ((error = (inf.nbits == 32 ? handle_fat_32((t_fat_ar *)ar, inf) :
+			handle_fat_64((t_fat_ar_64 *)ar, inf))) != NO_ERROR)
 			return (error);
-		if (swap32(inf.nbits == 32 ? ((fat_ar *)arch)->cputype :
-			((fat_ar_64 *)arch)->cputype, inf.swap) == CPU_TYPE_X86_64)
+		if (swap32(inf.nbits == 32 ? ((t_fat_ar *)ar)->cputype :
+			((t_fat_ar_64 *)ar)->cputype, inf.swap) == CPU_TYPE_X86_64)
 			return (0);
-		arch = (void*)arch + arch_size;
+		ar = (void*)ar + ar_size;
 	}
 	return (0);
 }

@@ -1,6 +1,18 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   check_file_format.c                                :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: lperret <marvin@42.fr>                     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2018/04/26 17:28:34 by lperret           #+#    #+#             */
+/*   Updated: 2018/04/26 17:28:36 by lperret          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "nm.h"
 
-int			check_addr(void **dst, void *src, size_t size, t_infos infos)
+int			check(void **dst, void *src, size_t size, t_infos infos)
 {
 	if (!(src >= (void*)infos.ptr && src <= (void*)infos.ptr + infos.filesize &&
 		src + size >= (void*)infos.ptr &&

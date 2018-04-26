@@ -6,7 +6,7 @@
 /*   By: lperret <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/24 13:37:18 by lperret           #+#    #+#             */
-/*   Updated: 2018/04/26 15:55:04 by lperret          ###   ########.fr       */
+/*   Updated: 2018/04/26 17:44:31 by lperret          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ static int			get_syms_32(t_infos *infos)
 
 	if (!(infos->syms = (t_sym*)ft_memalloc(sizeof(t_sym) * infos->nsyms)))
 		return (MALLOC_ERROR);
-	if (check_addr(NULL, infos->ptr, infos->symoff +
+	if (check(NULL, infos->ptr, infos->symoff +
 				infos->nsyms * sizeof(*array), *infos) != 0)
 		return (FORMAT_ERROR);
 	array = (struct nlist*)((void*)infos->ptr + infos->symoff);
@@ -48,7 +48,7 @@ static int			get_syms_64(t_infos *infos)
 
 	if (!(infos->syms = (t_sym*)ft_memalloc(sizeof(t_sym) * infos->nsyms)))
 		return (MALLOC_ERROR);
-	if (check_addr(NULL, infos->ptr, infos->symoff +
+	if (check(NULL, infos->ptr, infos->symoff +
 				infos->nsyms * sizeof(*array), *infos) != 0)
 		return (FORMAT_ERROR);
 	array = (struct nlist_64 *)((void*)infos->ptr + infos->symoff);
@@ -73,11 +73,11 @@ static int			handle_syms(t_infos *infos)
 	uint64_t	i;
 	int			error;
 
-	if (check_addr(NULL, infos->lc, sizeof(sym_com), *infos) != 0)
+	if (check(NULL, infos->lc, sizeof(t_sym_com), *infos) != 0)
 		return (FORMAT_ERROR);
-	infos->symoff = swap32(((sym_com *)infos->lc)->symoff, infos->swap);
-	infos->nsyms = swap32(((sym_com *)infos->lc)->nsyms, infos->swap);
-	infos->stroff = swap32(((sym_com *)infos->lc)->stroff, infos->swap);
+	infos->symoff = swap32(((t_sym_com *)infos->lc)->symoff, infos->swap);
+	infos->nsyms = swap32(((t_sym_com *)infos->lc)->nsyms, infos->swap);
+	infos->stroff = swap32(((t_sym_com *)infos->lc)->stroff, infos->swap);
 	if (infos->nbits == 32)
 		error = get_syms_32(infos);
 	else
@@ -94,15 +94,16 @@ static int			handle_syms(t_infos *infos)
 	return (0);
 }
 
-static int				get_data(t_infos *infos)
+static int			get_data(t_infos *infos)
 {
 	uint32_t	header_size;
 
-	header_size = (infos->nbits == 32 ? sizeof(header) : sizeof(header_64));
-	if (check_addr(NULL, infos->ptr, header_size, *infos) != 0)
+	header_size = (infos->nbits == 32 ? sizeof(t_header) : sizeof(t_header_64));
+	if (check(NULL, infos->ptr, header_size, *infos) != 0)
 		return (FORMAT_ERROR);
-	infos->ncmds = (infos->nbits == 32 ? swap32(((header*)(infos->ptr))->ncmds,
-		infos->swap) : swap32(((header_64*)(infos->ptr))->ncmds, infos->swap));
+	infos->ncmds = (infos->nbits == 32 ?
+			swap32(((t_header*)(infos->ptr))->ncmds, infos->swap) :
+			swap32(((t_header_64*)(infos->ptr))->ncmds, infos->swap));
 	infos->lc = (void*)infos->ptr + header_size;
 	if (get_sec_names(infos->lc, infos->ncmds, infos) != 0)
 		return (FORMAT_ERROR);
@@ -116,14 +117,14 @@ int					handle_32_64(t_infos infos)
 	int						error;
 	uint32_t				i;
 	uint32_t				cmd;
-	
+
 	error = get_data(&infos);
 	if (error != NO_ERROR)
 		return (error);
 	i = -1;
 	while (++i < infos.ncmds)
 	{
-		if (check_addr(NULL, infos.lc, sizeof(struct load_command), infos) != 0)
+		if (check(NULL, infos.lc, sizeof(struct load_command), infos) != 0)
 			return (FORMAT_ERROR);
 		cmd = swap32(infos.lc->cmd, infos.swap);
 		if (cmd == LC_SYMTAB)
