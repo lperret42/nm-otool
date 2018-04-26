@@ -1,22 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   swap_syms.c                                        :+:      :+:    :+:   */
+/*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lperret <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/04/17 11:24:48 by lperret           #+#    #+#             */
-/*   Updated: 2018/04/26 16:46:39 by lperret          ###   ########.fr       */
+/*   Created: 2018/04/26 11:17:59 by lperret           #+#    #+#             */
+/*   Updated: 2018/04/26 16:46:51 by lperret          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "nm.h"
 
-void		swap_sym(t_sym *syms, int a, int b)
+t_sym		get_sym(char debug, unsigned long value,
+													int n_sect, char letter)
 {
-	t_sym	tmp;
+	t_sym		sym;
 
-	tmp = syms[a];
-	syms[a] = syms[b];
-	syms[b] = tmp;
+	sym.for_debug = debug;
+	sym.value = (letter == 'u' || letter == 'U') ? -1 : value;
+	sym.n_sect = n_sect;
+	sym.letter = letter;
+	return (sym);
 }

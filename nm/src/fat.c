@@ -6,94 +6,121 @@
 /*   By: lperret <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/17 11:07:30 by lperret           #+#    #+#             */
-/*   Updated: 2018/04/25 15:24:03 by lperret          ###   ########.fr       */
+/*   Updated: 2018/04/26 16:25:00 by lperret          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "nm.h"
 
-static uint32_t		swap_uint32(uint32_t nb)
+static int		handle_cpu_type(uint32_t cputype, t_infos inf)
 {
-	uint32_t	i;
-	uint32_t	nb_octet;
-	uint32_t	ret;
-
-	ret = 0;
-	nb_octet = sizeof(nb);
-	i = 0;
-	while (i < nb_octet)
-	{
-		*((unsigned char *)&ret + i) =
-				*((unsigned char *)&nb + (nb_octet - 1 - i));
-		i++;
-	}
-	return (ret);
-}
-
-static int			check_cpu_type(uint32_t cputype_swaped, t_infos infos)
-{
-	if ((cputype_swaped & CPU_TYPE_X86_64) == CPU_TYPE_X86_64)
+	if ((cputype & CPU_TYPE_X86_64) == CPU_TYPE_X86_64)
 		return (0);
-	else if (1)
-		return (-1);        // need to delete this line
-	else if (cputype_swaped == CPU_TYPE_I386)
+	else if (cputype == CPU_TYPE_I386 && !inf.host_cpu)
 	{
-		ft_printf("\n%s (for architecture i386):\n", infos.filename);
+		ft_printf("\n%s (for architecture i386):\n", inf.filename);
 		return (0);
 	}
-	else if (cputype_swaped == CPU_TYPE_POWERPC)
+	else if (cputype == CPU_TYPE_POWERPC && !inf.host_cpu)
 	{
-		ft_printf("\n%s (for architecture ppc):\n", infos.filename);
+		ft_printf("\n%s (for architecture ppc):\n", inf.filename);
 		return (0);
 	}
 	return (-1);
 }
 
-static int			handle_fat_32(struct fat_arch *arch, t_infos infos)
+static int		handle_fat_32(fat_ar *arch, t_infos inf)
 {
-	t_infos		new_infos;
-	uint32_t	offset_swaped;
-	uint32_t	cputype_swaped;
+	t_infos		new_inf;
+	uint32_t	cputype;
+	uint32_t	offset;
+	uint32_t	size;
 
-	if (check_addr(NULL, (void*)arch, sizeof(*arch), infos) != 0)
-		return (FORMAT_ERROR);
-	offset_swaped = swap_uint32(arch->offset);
-	cputype_swaped = swap_uint32(arch->cputype);
-	if (check_cpu_type(cputype_swaped, infos) != 0)
+	cputype = swap32(arch->cputype, inf.swap);
+	if (handle_cpu_type(cputype, inf) == -1)
 		return (0);
-	if (check_addr(NULL, (void*)infos.ptr + offset_swaped, 0, infos) != 0)
+	offset = swap32(arch->offset, inf.swap);
+	size = swap32(arch->size, inf.swap);
+	if (check_addr(NULL, (void*)inf.ptr + offset, size, inf) != 0)
 		return (FORMAT_ERROR);
-	ft_memcpy(&new_infos, &infos, sizeof(t_infos));
-	new_infos.nbfiles = 0;
-	new_infos.filename = NULL;
-	new_infos.ptr = (void*)infos.ptr + offset_swaped;
-	new_infos.filesize = arch->size;
-	new_infos.sec_names = NULL;
-	new_infos.syms = NULL;
-	//ft_printf("new fat:\n****************************\n");
-	return (nm(new_infos));
+	ft_memcpy(&new_inf, &inf, sizeof(t_infos));
+	new_inf.nbfiles = 0;
+	new_inf.ptr = (void*)inf.ptr + offset;
+	new_inf.filesize = size;
+	new_inf.sec_names = NULL;
+	new_inf.syms = NULL;
+	return (nm(new_inf));
 }
 
-int					handle_fats(t_infos infos)
+static int		handle_fat_64(fat_ar_64 *arch, t_infos inf)
+{
+	t_infos		new_inf;
+	uint32_t	cputype;
+	uint32_t	offset;
+	uint32_t	size;
+
+	cputype = swap32(arch->cputype, inf.swap);
+	if (handle_cpu_type(cputype, inf) == -1)
+		return (0);
+	offset = swap64(arch->offset, inf.swap);
+	size = swap64(arch->size, inf.swap);
+	if (check_addr(NULL, (void*)inf.ptr + offset, size, inf) != 0)
+		return (FORMAT_ERROR);
+	ft_memcpy(&new_inf, &inf, sizeof(t_infos));
+	new_inf.nbfiles = 0;
+	new_inf.ptr = (void*)inf.ptr + offset;
+	new_inf.filesize = size;
+	new_inf.sec_names = NULL;
+	new_inf.syms = NULL;
+	return (nm(new_inf));
+}
+
+static int		check_host(t_infos inf, void *arch,
+						uint32_t arch_size, uint32_t nfat_arch)
+{
+	uint32_t			i;
+	uint32_t			cputype;
+
+	i = 0;
+	while (i < nfat_arch)
+	{
+		cputype = swap32(inf.nbits == 32 ?
+				((fat_ar *)arch)->cputype :
+				((fat_ar_64 *)arch)->cputype, inf.swap);
+		if (cputype == CPU_TYPE_X86_64)
+			return (1);
+		arch = (void*)arch + arch_size;
+		i++;
+	}
+	return (0);
+}
+
+int				handle_fats(t_infos inf)
 {
 	int					error;
 	struct fat_header	*fat;
-	struct fat_arch		*arch;
+	void				*arch;
+	uint32_t			arch_size;
 	uint32_t			i;
-	uint32_t			n;
 
-	if (check_addr((void**)&fat, infos.ptr, sizeof(*fat), infos) != 0)
+	if (check_addr((void**)&fat, inf.ptr, sizeof(*fat), inf) != 0)
 		return (FORMAT_ERROR);
-	n = swap_uint32(fat->nfat_arch);
-	arch = (void*)infos.ptr + sizeof(*fat);
-	i = 0;
-	while (i < n)
+	arch = (void*)inf.ptr + sizeof(*fat);
+	arch_size = inf.nbits == 32 ? sizeof(fat_ar) : sizeof(fat_ar_64);
+	if (check_addr(NULL, arch, arch_size * swap32(fat->nfat_arch, inf.swap), inf) != 0)
+		return (FORMAT_ERROR);
+	inf.host_cpu = check_host(inf, arch, arch_size, swap32(fat->nfat_arch, inf.swap));
+	i = -1;
+	while (++i < swap32(fat->nfat_arch, inf.swap))
 	{
-		error = handle_fat_32(arch, infos);
+		error = (inf.nbits == 32 ? handle_fat_32((fat_ar *)arch, inf) :
+				handle_fat_64((fat_ar_64 *)arch, inf));
 		if (error != NO_ERROR)
 			return (error);
-		arch = (void*)arch + sizeof(*arch);
-		i++;
+		if (swap32(inf.nbits == 32 ? ((fat_ar *)arch)->cputype :
+			((fat_ar_64 *)arch)->cputype, inf.swap) == CPU_TYPE_X86_64)
+			return (0);
+		arch = (void*)arch + arch_size;
 	}
 	return (0);
 }

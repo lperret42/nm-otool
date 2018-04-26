@@ -2,13 +2,6 @@
 
 int			check_addr(void **dst, void *src, size_t size, t_infos infos)
 {
-	if (DEBUG)
-	{
-		ft_printf("infos.ptr:                  %p\n", infos.ptr);
-		ft_printf("addr + size:                %p\n", (void*)(src + size));
-		ft_printf("infos.ptr + infos.filesize: %p\n", infos.ptr + infos.filesize);
-	}
-	//if (!(src + size >= (void*)infos.ptr &&
 	if (!(src >= (void*)infos.ptr && src <= (void*)infos.ptr + infos.filesize &&
 		src + size >= (void*)infos.ptr &&
 						src + size <= (void*)infos.ptr + infos.filesize))
@@ -16,4 +9,14 @@ int			check_addr(void **dst, void *src, size_t size, t_infos infos)
 	if (dst != NULL)
 		*dst = src;
 	return (0);
+}
+
+int			check_sym_name(char *name, t_infos infos)
+{
+	if ((void*)name < (void*)infos.ptr)
+		return (1);
+	while ((void*)name <= (void*)infos.ptr + infos.filesize)
+		if (!*name++)
+			return (0);
+	return (1);
 }

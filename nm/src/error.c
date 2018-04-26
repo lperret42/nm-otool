@@ -6,25 +6,21 @@
 /*   By: lperret <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/17 11:07:03 by lperret           #+#    #+#             */
-/*   Updated: 2018/04/23 20:20:45 by lperret          ###   ########.fr       */
+/*   Updated: 2018/04/26 16:08:23 by lperret          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "nm.h"
 
-int		handle_error(t_error error, char *file, int nb_real_arg)
+int		handle_error(t_error error, t_infos infos)
 {
-	nb_real_arg = 6546;
-
-	if (DEBUG)
-		ft_printf("in handle_error, error: %d\n", error);
-	if (error && file)
+	if (error && infos.filename && error != MALLOC_ERROR && error != FORMAT_ERROR)
 	{
-		ft_putstr_fd(file, 2);
+		ft_putstr_fd(infos.filename, 2);
 		ft_putstr_fd(": ", 2);
 	}
 	if (error == UNRECOGNIZED_OPTION_ERROR)
-		ft_putendl_fd("Unrecognized flag", 2);
+		ft_putendl_fd("Unrecognized option", 2);
 	else if (error == NOT_OBJECT_ERROR)
 		ft_putendl_fd("The file was not recognized as a valid object file\n",
 																		2);
@@ -32,6 +28,8 @@ int		handle_error(t_error error, char *file, int nb_real_arg)
 		ft_putendl_fd("Can't open file", 2);
 	else if (error == FSTAT_ERROR)
 		ft_putendl_fd("fstat failure", 2);
+	else if (error == EMPTY_FILE_ERROR)
+		ft_putendl_fd("empty file", 2);
 	else if (error == MMAP_ERROR)
 		ft_putendl_fd("mmap failure", 2);
 	else if (error == MUNMAP_ERROR)

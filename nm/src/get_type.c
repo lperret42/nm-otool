@@ -6,7 +6,7 @@
 /*   By: lperret <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/17 11:07:53 by lperret           #+#    #+#             */
-/*   Updated: 2018/04/24 13:41:38 by lperret          ###   ########.fr       */
+/*   Updated: 2018/04/26 16:39:33 by lperret          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,6 @@
 
 static char		get_letter_from_section_name(char *name)
 {
-	if (DEBUG)
-	{
-		ft_printf("in get_letter_from_section_name, name: %s\n", name);
-		ft_printf("in get_letter_from_section_name, SECT_DATA: %s\n", SECT_DATA);
-	}
 	if (!ft_strcmp(name, SECT_DATA))
 		return ('D');
 	else if (!ft_strcmp(name, SECT_BSS))
