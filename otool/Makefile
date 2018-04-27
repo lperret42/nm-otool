@@ -11,11 +11,12 @@ SRC_PATH = ./src/
 INCLUDES_PATH = ./includes/
 OBJ_PATH = ./obj/
 
-SRC = main.c otool.c ar.c fat.c bin_64.c bin_32.c sort_ars.c error.c
+SRC = main.c otool.c ar.c fat.c bin_32_64.c print.c utils.c error.c \
+	  check_file_format.c
 
 OBJ	= $(addprefix $(OBJ_PATH),$(SRC:.c=.o))
 
-all: $(NAME) | silent
+all: libft $(NAME) | silent
 
 silent:
 	@:
@@ -27,10 +28,10 @@ $(NAME): obj $(LIBFT_A) $(OBJ)
 obj:
 	@mkdir $(OBJ_PATH)
 
-$(LIBFT_A):
+libft:
 	@make -C $(LIBFT_PATH)
 
-$(OBJ_PATH)%.o:$(SRC_PATH)%.c
+$(OBJ_PATH)%.o:$(SRC_PATH)%.c $(INCLUDES_PATH)
 	@$(CC) $(FLAGS) -I$(INCLUDES_PATH) $(LIBFT_H) -o $@ -c $<
 	@echo "\033[33mCompiling" [ $< ] "\033[0m"
 

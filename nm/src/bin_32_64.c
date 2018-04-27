@@ -6,7 +6,7 @@
 /*   By: lperret <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/24 13:37:18 by lperret           #+#    #+#             */
-/*   Updated: 2018/04/27 12:31:19 by lperret          ###   ########.fr       */
+/*   Updated: 2018/04/27 18:14:51 by lperret          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ static int			get_syms_32(t_infos *infos)
 						infos->sec_names[array[i].n_sect - 1];
 		infos->syms[i] = get_sym(array[i].n_type & N_STAB ? 1 : 0,
 			swap32(array[i].n_value, infos->swap), array[i].n_sect,
-			get_type(array[i].n_type, array[i].n_sect, section_name));
+			get_type(array[i].n_type, array[i].n_value, section_name));
 		infos->syms[i].name = infos->ptr + infos->stroff +
 								swap32(array[i].n_un.n_strx, infos->swap);
 		i++;
@@ -59,7 +59,7 @@ static int			get_syms_64(t_infos *infos)
 						infos->sec_names[array[i].n_sect - 1];
 		infos->syms[i] = get_sym(array[i].n_type & N_STAB ? 1 : 0,
 			swap64(array[i].n_value, infos->swap), array[i].n_sect,
-			get_type(array[i].n_type, array[i].n_sect, section_name));
+			get_type(array[i].n_type, array[i].n_value, section_name));
 		infos->syms[i].name = infos->ptr + infos->stroff +
 								swap32(array[i].n_un.n_strx, infos->swap);
 		i++;
@@ -122,8 +122,8 @@ int					handle_32_64(t_infos infos)
 	error = get_data(&infos);
 	if (error != NO_ERROR)
 		return (error);
-	i = -1;
-	while (++i < infos.ncmds)
+	i = 0;
+	while (i < infos.ncmds)
 	{
 		if (check(NULL, infos.lc, sizeof(struct load_command), infos) != 0)
 			return (FORMAT_ERROR);
@@ -131,6 +131,7 @@ int					handle_32_64(t_infos infos)
 		if (cmd == LC_SYMTAB)
 			return (handle_syms(&infos));
 		infos.lc = (void*)infos.lc + swap32(infos.lc->cmdsize, infos.swap);
+		i++;
 	}
 	return (0);
 }

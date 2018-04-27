@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: lperret <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/04/23 15:01:39 by lperret           #+#    #+#             */
-/*   Updated: 2018/04/23 15:01:50 by lperret          ###   ########.fr       */
+/*   Created: 2018/04/17 10:07:35 by lperret           #+#    #+#             */
+/*   Updated: 2018/04/27 17:48:55 by lperret          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,78 +22,38 @@ static int			get_size(char *name)
 	return (x);
 }
 
-static int			process_ar(t_ar ar, char *file)
+static int			handle_ar(struct ar_hdr *arch, t_infos infos)
 {
-	unsigned int		magic_number;
+	t_infos		new_infos;
 
-	ft_printf("%s(%s):\n", file, ar.name);
-	magic_number = *(unsigned int*)ar.ptr;
-	if (magic_number == MH_MAGIC_64)
-		return (handle_64(ar.ptr));
-	else if (magic_number == MH_MAGIC)
-		return (handle_32(ar.ptr));
-	else
-		return (NOT_OBJECT_ERROR);
+	if (check(NULL, (void*)arch, sizeof(*arch), infos) != 0)
+		return (FORMAT_ERROR);
+	if (check(NULL, (void*)arch + sizeof(*arch),
+									ft_atoi(arch->ar_size), infos) != 0)
+		return (FORMAT_ERROR);
+	ft_memcpy(&new_infos, &infos, sizeof(t_infos));
+	new_infos.nbfiles = 0;
+	new_infos.filename = (void*)arch + sizeof(*arch);
+	new_infos.ptr = (void*)arch + sizeof(*arch) + get_size(arch->ar_name);
+	new_infos.filesize = sizeof(*arch) + ft_atoi(arch->ar_size);
+	ft_printf("%s(%s):\n", infos.filename, (void*)arch + sizeof(*arch));
+	return (otool(new_infos));
 }
 
-static int			process_ars(t_ar *ars, int nb_ar, char *file)
+int					handle_ars(t_infos infos)
 {
-	int		i;
-	t_ar	tmp;
-
-	quick_sort_ars(ars, 0, nb_ar - 1);
-	i = 0;
-	while (i < nb_ar)
-	{
-		if (!(i > 0 && tmp.name == ars[i].name))
-		{
-			if (process_ar(ars[i], file) != 0)
-				return (-1);
-		}
-		tmp = ars[i];
-		i++;
-	}
-	return (0);
-}
-
-static t_ar			get_ar(char *ptr, struct ranlib ran)
-{
+	int				error;
 	struct ar_hdr	*arch;
-	int				size;
-	t_ar			ar;
 
-	arch = (void*)ptr + ran.ran_off;
-	size = get_size(arch->ar_name);
-	ar.name = ft_strstr(arch->ar_name, ARFMAG) + ft_strlen(ARFMAG);
-	ar.strx = ran.ran_un.ran_strx;
-	ar.off = ran.ran_off;
-	ar.ptr = (void*)arch + sizeof(*arch) + size;
-	return (ar);
-}
-
-int					handle_ar(char *ptr, char *file)
-{
-	struct ar_hdr	*arch;
-	struct ranlib	*ran;
-	int				i;
-	int				size;
-	t_ar			*ars;
-
-	arch = (void*)ptr + SARMAG;
-	ran = (void*)ptr + SARMAG + sizeof(*arch) +
-							get_size(arch->ar_name) + sizeof(int);
-	size = *((int *)((void*)ptr + sizeof(*arch) + SARMAG +
-											get_size(arch->ar_name)));
-	size = size / sizeof(struct ranlib);
-	if (!(ars = (t_ar*)(ft_memalloc(sizeof(t_ar) * size))))
-		return (-1);
-	i = 0;
-	while (i < size)
+	ft_printf("Archive : %s\n", infos.filename);
+	arch = (void*)infos.ptr + SARMAG;
+	arch = (void*)arch + sizeof(*arch) + ft_atoi(arch->ar_size);
+	while ((void*)arch < (void*)(infos.ptr + infos.filesize))
 	{
-		ars[i] = get_ar(ptr, ran[i]);
-		i++;
+		error = handle_ar(arch, infos);
+		if (error != NO_ERROR)
+			return (error);
+		arch = (void*)arch + sizeof(*arch) + ft_atoi(arch->ar_size);
 	}
-	process_ars(ars, size, file);
-	free(ars);
 	return (0);
 }

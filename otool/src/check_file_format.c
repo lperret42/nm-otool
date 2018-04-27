@@ -1,27 +1,24 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   alpha.c                                            :+:      :+:    :+:   */
+/*   check_file_format.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lperret <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/04/06 15:41:00 by lperret           #+#    #+#             */
-/*   Updated: 2018/04/27 12:51:02 by lperret          ###   ########.fr       */
+/*   Created: 2018/04/26 17:28:34 by lperret           #+#    #+#             */
+/*   Updated: 2018/04/27 17:51:53 by lperret          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "otool.h"
 
-char	*ft_set_alpha(t_print *elem, size_t len)
+int			check(void **dst, void *src, size_t size, t_infos infos)
 {
-	int		nb;
-	char	*ret;
-
-	nb = 0;
-	if (elem->width > (int)len)
-		nb = elem->width - (int)len;
-	if (!(ret = ft_strnew(nb)))
-		return (NULL);
-	ft_memset(ret, ' ', nb);
-	return (ret);
+	if (!(src >= (void*)infos.ptr && src <= (void*)infos.ptr + infos.filesize &&
+		src + size >= (void*)infos.ptr &&
+						src + size <= (void*)infos.ptr + infos.filesize))
+		return (-1);
+	if (dst != NULL)
+		*dst = src;
+	return (0);
 }

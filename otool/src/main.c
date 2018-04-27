@@ -5,63 +5,64 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: lperret <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/04/23 15:02:54 by lperret           #+#    #+#             */
-/*   Updated: 2018/04/23 15:03:05 by lperret          ###   ########.fr       */
+/*   Created: 2018/04/27 13:09:42 by lperret           #+#    #+#             */
+/*   Updated: 2018/04/27 14:29:28 by lperret          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "otool.h"
 
-static int			handle_arg(char *arg)
+static int			handle_arg(char *arg, t_infos infos)
 {
 	int				fd;
 	char			*ptr;
 	struct stat		buf;
+	int				error;
 
+	infos.filename = arg;
 	if ((fd = open(arg, O_RDONLY)) < 0)
-		return (handle_error(OPENING_ERROR, arg));
+		return (handle_error(OPENING_ERROR, infos));
 	else
 	{
 		if (fstat(fd, &buf) < 0)
-			return (handle_error(FSTAT_ERROR, arg));
-		else if ((ptr = mmap(0, buf.st_size, PROT_READ,
+			return (handle_error(FSTAT_ERROR, infos));
+		if (buf.st_size == 0)
+			return (handle_error(NOT_OBJECT_ERROR, infos));
+		if ((ptr = mmap(0, buf.st_size, PROT_READ,
 							MAP_PRIVATE, fd, 0)) == MAP_FAILED)
-			return (handle_error(MMAP_ERROR, arg));
-		else
-		{
-			handle_error(otool(ptr, arg), arg);
-			if (munmap(0, buf.st_size) < 0)
-				handle_error(MUNMAP_ERROR, arg);
-		}
+			return (handle_error(MMAP_ERROR, infos));
+		infos.ptr = ptr;
+		infos.filesize = buf.st_size;
+		error = handle_error(otool(infos), infos);
+		if (munmap(ptr, buf.st_size) < 0)
+			handle_error(MUNMAP_ERROR, infos);
 	}
-	return (0);
+	return (error);
 }
 
-static int			handle_args(int ac, char **av)
+static int			handle_args(int ac, char **av, t_infos infos)
 {
 	int		i;
-	int		nb_real_arg;
 	int		nb_errors;
 
 	nb_errors = 0;
 	i = 1;
-	while (i < ac && av[i][0] == '-')
-		i++;
-	nb_real_arg = ac - i;
 	while (i < ac)
 	{
-		if (av[i][0] == '-')
-			;
-		else if (handle_arg(av[i]) != 0)
+		if (handle_arg(av[i], infos) != 0)
 			nb_errors++;
 		i++;
 	}
-	return (nb_errors > 0 ? EXIT_FAILURE : EXIT_SUCCESS);
+	return (nb_errors > 0 ? 1 : 0);
 }
 
 int					main(int ac, char **av)
 {
-	if (ac < 2)
-		return (handle_error(NO_ARG_ERROR, NULL));
-	return (handle_args(ac, av));
+	t_infos		infos;
+
+	ft_bzero(&infos, sizeof(t_infos));
+	infos.nbfiles = ac - 1;
+	if (infos.nbfiles < 1)
+		return (handle_error(NO_ARG_ERROR, infos));
+	return (handle_args(ac, av, infos));
 }

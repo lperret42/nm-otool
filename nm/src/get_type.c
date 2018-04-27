@@ -6,7 +6,7 @@
 /*   By: lperret <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/17 11:07:53 by lperret           #+#    #+#             */
-/*   Updated: 2018/04/26 16:39:33 by lperret          ###   ########.fr       */
+/*   Updated: 2018/04/27 18:14:29 by lperret          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,12 +14,12 @@
 
 static char		get_letter_from_section_name(char *name)
 {
-	if (!ft_strcmp(name, SECT_DATA))
+	if (!ft_strcmp(name, SECT_TEXT))
+		return ('T');
+	else if (!ft_strcmp(name, SECT_DATA))
 		return ('D');
 	else if (!ft_strcmp(name, SECT_BSS))
 		return ('B');
-	else if (!ft_strcmp(name, SECT_TEXT))
-		return ('T');
 	else
 		return ('S');
 }
@@ -39,7 +39,7 @@ char			get_type(uint32_t type, int n_value, char *section_name)
 		ret = 'A';
 	else if ((type & N_TYPE) == N_PBUD)
 		ret = 'U';
-	else if ((type & N_TYPE) == N_SECT)
+	if ((type & N_TYPE) == N_SECT)
 		ret = get_letter_from_section_name(section_name);
 	else if ((type & N_TYPE) == N_INDR)
 		ret = 'I';
