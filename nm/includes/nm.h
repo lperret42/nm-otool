@@ -6,7 +6,7 @@
 /*   By: lperret <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/16 11:44:43 by lperret           #+#    #+#             */
-/*   Updated: 2018/04/26 17:40:24 by lperret          ###   ########.fr       */
+/*   Updated: 2018/04/27 12:31:11 by lperret          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,6 +79,7 @@ typedef struct	s_infos
 	char					**sec_names;
 	uint32_t				symoff;
 	uint32_t				stroff;
+	uint32_t				strsize;
 	int						host_cpu;
 	uint32_t				nsyms;
 	t_sym					*syms;
@@ -89,8 +90,8 @@ int				nm(t_infos infos);
 int				check(void **dst, void *addr, size_t size, t_infos infos);
 int				check_sym_name(char *name, t_infos infos);
 
-int				handle_ars(t_infos infos);
 int				handle_fats(t_infos infos);
+int				handle_ars(t_infos infos);
 int				handle_32_64(t_infos infos);
 
 uint32_t		swap32(uint32_t nb, int to_swap);
@@ -98,6 +99,8 @@ uint64_t		swap64(uint64_t nb, int to_swap);
 
 char			get_type(uint32_t type, int n_value, char *section_name);
 
+t_sym			get_sym(char debug, unsigned long value, int n_sect,
+															char letter);
 void			swap_sym(t_sym *syms, int a, int b);
 void			quick_sort_syms_ascii_reverse(t_sym *syms, int begin, int end);
 void			quick_sort_syms(t_sym *syms, int nsyms, t_flags flags);
@@ -108,8 +111,5 @@ int				get_sec_names(struct load_command *lc, uint32_t ncmds,
 															t_infos *infos);
 
 int				print_syms(t_infos infos, int nsyms);
-
-t_sym			get_sym(char debug, unsigned long value, int n_sect,
-															char letter);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: lperret <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/24 13:37:18 by lperret           #+#    #+#             */
-/*   Updated: 2018/04/26 17:44:31 by lperret          ###   ########.fr       */
+/*   Updated: 2018/04/27 12:31:19 by lperret          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,11 +78,12 @@ static int			handle_syms(t_infos *infos)
 	infos->symoff = swap32(((t_sym_com *)infos->lc)->symoff, infos->swap);
 	infos->nsyms = swap32(((t_sym_com *)infos->lc)->nsyms, infos->swap);
 	infos->stroff = swap32(((t_sym_com *)infos->lc)->stroff, infos->swap);
-	if (infos->nbits == 32)
-		error = get_syms_32(infos);
-	else
-		error = get_syms_64(infos);
-	if (error != NO_ERROR)
+	infos->strsize = swap32(((t_sym_com *)infos->lc)->strsize, infos->swap);
+	if (check(NULL, (void*)infos->ptr + infos->stroff, infos->strsize,
+																*infos) != 0)
+		return (FORMAT_ERROR);
+	if ((error = (infos->nbits == 32 ? get_syms_32(infos) :
+										get_syms_64(infos))) != NO_ERROR)
 		return (error);
 	i = 0;
 	while (i < infos->nsyms)

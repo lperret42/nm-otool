@@ -90,7 +90,10 @@ SRC = ft_memset.c \
 
 OBJ= $(addprefix $(OBJ_PATH),$(SRC:.c=.o))
 
-all: $(NAME)
+all: $(NAME) | silent
+
+silent:
+	@:
 
 $(NAME): obj $(OBJ)
 	@libtool -v -static -o $@ $(OBJ)
@@ -99,7 +102,7 @@ $(NAME): obj $(OBJ)
 obj:
 	@mkdir $(OBJ_PATH)
 
-$(OBJ_PATH)%.o:$(SRC_PATH)%.c
+$(OBJ_PATH)%.o:$(SRC_PATH)%.c $(INCLUDES_PATH)
 	@$(CC) $(FLAGS) $(LIBFT_H) -I$(INCLUDES_PATH) -o $@ -c $<
 	@echo "\033[33mCompiling" [ $< ] "\033[0m"
 

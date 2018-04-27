@@ -15,7 +15,10 @@ SRC = main.c otool.c ar.c fat.c bin_64.c bin_32.c sort_ars.c error.c
 
 OBJ	= $(addprefix $(OBJ_PATH),$(SRC:.c=.o))
 
-all: $(NAME)
+all: $(NAME) | silent
+
+silent:
+	@:
 
 $(NAME): obj $(LIBFT_A) $(OBJ)
 	@$(CC) $(FLAGS) -o $@ $(LIBFT_A) $(OBJ)
