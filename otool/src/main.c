@@ -6,7 +6,7 @@
 /*   By: lperret <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/27 13:09:42 by lperret           #+#    #+#             */
-/*   Updated: 2018/04/27 14:29:28 by lperret          ###   ########.fr       */
+/*   Updated: 2018/04/30 11:26:53 by lperret          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,17 +43,15 @@ static int			handle_arg(char *arg, t_infos infos)
 static int			handle_args(int ac, char **av, t_infos infos)
 {
 	int		i;
-	int		nb_errors;
 
-	nb_errors = 0;
 	i = 1;
 	while (i < ac)
 	{
 		if (handle_arg(av[i], infos) != 0)
-			nb_errors++;
+			return (-1);
 		i++;
 	}
-	return (nb_errors > 0 ? 1 : 0);
+	return (0);
 }
 
 int					main(int ac, char **av)

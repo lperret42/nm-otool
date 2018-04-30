@@ -6,7 +6,7 @@
 /*   By: lperret <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/17 11:07:30 by lperret           #+#    #+#             */
-/*   Updated: 2018/04/26 17:42:44 by lperret          ###   ########.fr       */
+/*   Updated: 2018/04/30 10:24:21 by lperret          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,8 @@ static int		handle_fat_32(t_fat_ar *arch, t_infos inf)
 	new_inf.nbfiles = 0;
 	new_inf.ptr = (void*)inf.ptr + offset;
 	new_inf.filesize = size;
+	if (!(new_inf.filesize < inf.filesize))
+		return (FORMAT_ERROR);
 	new_inf.sec_names = NULL;
 	new_inf.syms = NULL;
 	return (nm(new_inf));
@@ -70,6 +72,8 @@ static int		handle_fat_64(t_fat_ar_64 *arch, t_infos inf)
 	new_inf.nbfiles = 0;
 	new_inf.ptr = (void*)inf.ptr + offset;
 	new_inf.filesize = size;
+	if (!(new_inf.filesize < inf.filesize))
+		return (FORMAT_ERROR);
 	new_inf.sec_names = NULL;
 	new_inf.syms = NULL;
 	return (nm(new_inf));

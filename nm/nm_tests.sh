@@ -25,10 +25,10 @@ do
 	fi
 done
 
-ft_nm="$my_binary ft_nm ft_nm obj/main.o obj/nm.o ft_nm> my_nm"
+ft_nm="$my_binary ft_nm ft_nm obj/main.o obj/nm.o ft_nm ../libft/libft.a > my_nm"
 echo "$ft_nm"
 eval "$ft_nm"
-nm="$real_binary ft_nm ft_nm obj/main.o obj/nm.o ft_nm> real_nm"
+nm="$real_binary ft_nm ft_nm obj/main.o obj/nm.o ft_nm ../libft/libft.a > real_nm"
 echo "$nm"
 eval "$nm"
 diff="diff my_nm real_nm"
@@ -36,10 +36,10 @@ echo "$diff"
 eval "$diff"
 echo ""
 
-ft_nm="$my_binary ft_nm ft_nm obj/main.o src/main.c ft_nm> my_nm"
+ft_nm="$my_binary ft_nm ft_nm obj/main.o src/main.c ft_nm > my_nm"
 echo "$ft_nm"
 eval "$ft_nm"
-nm="$real_binary ft_nm ft_nm obj/main.o src/main.c ft_nm> real_nm"
+nm="$real_binary ft_nm ft_nm obj/main.o src/main.c ft_nm > real_nm"
 echo "$nm"
 eval "$nm"
 diff="diff my_nm real_nm"

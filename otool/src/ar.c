@@ -6,7 +6,7 @@
 /*   By: lperret <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/17 10:07:35 by lperret           #+#    #+#             */
-/*   Updated: 2018/04/27 17:48:55 by lperret          ###   ########.fr       */
+/*   Updated: 2018/04/30 10:22:50 by lperret          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,8 @@ static int			handle_ar(struct ar_hdr *arch, t_infos infos)
 	new_infos.filename = (void*)arch + sizeof(*arch);
 	new_infos.ptr = (void*)arch + sizeof(*arch) + get_size(arch->ar_name);
 	new_infos.filesize = sizeof(*arch) + ft_atoi(arch->ar_size);
+	if (!(new_infos.filesize < infos.filesize))
+		return (FORMAT_ERROR);
 	ft_printf("%s(%s):\n", infos.filename, (void*)arch + sizeof(*arch));
 	return (otool(new_infos));
 }
@@ -47,6 +49,8 @@ int					handle_ars(t_infos infos)
 
 	ft_printf("Archive : %s\n", infos.filename);
 	arch = (void*)infos.ptr + SARMAG;
+	if (check(NULL, (void*)arch, sizeof(*arch), infos) != 0)
+		return (FORMAT_ERROR);
 	arch = (void*)arch + sizeof(*arch) + ft_atoi(arch->ar_size);
 	while ((void*)arch < (void*)(infos.ptr + infos.filesize))
 	{

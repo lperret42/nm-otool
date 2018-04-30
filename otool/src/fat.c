@@ -6,7 +6,7 @@
 /*   By: lperret <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/17 11:07:30 by lperret           #+#    #+#             */
-/*   Updated: 2018/04/27 17:49:43 by lperret          ###   ########.fr       */
+/*   Updated: 2018/04/30 10:23:51 by lperret          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,8 @@ static int		handle_fat_32(t_fat_ar *arch, t_infos inf)
 		new_inf.nbfiles = 1;
 	new_inf.ptr = (void*)inf.ptr + offset;
 	new_inf.filesize = size;
+	if (!(new_inf.filesize < inf.filesize))
+		return (FORMAT_ERROR);
 	return (otool(new_inf));
 }
 
@@ -72,6 +74,8 @@ static int		handle_fat_64(t_fat_ar_64 *arch, t_infos inf)
 		new_inf.nbfiles = 1;
 	new_inf.ptr = (void*)inf.ptr + offset;
 	new_inf.filesize = size;
+	if (!(new_inf.filesize < inf.filesize))
+		return (FORMAT_ERROR);
 	return (otool(new_inf));
 }
 
